@@ -1,0 +1,21 @@
+@Fk_kiltisbot on suora yhteys kiltistoimikuntaan ja se on tarkoitettu palautteen ja kehitysehdotusten välittämiseen tai maidon yms. puutteesta valittamiseen.
+
+Bottia voi käyttää <b>inline-viesteillä</b> tai lähettämällä botille suoraan <b>yksitysiviestejä</b>.
+
+Inline-viestit toimivat missä tahansa keskustelussa ja voit valita haluatko lähettää viestit omalla nimelläsi vai anonyymisti. Inline-viestit tukevat pelkästään tekstiä ja niitä voi käyttää esimerkiksi avauksina ryhmäkeskusteluissa.
+
+<b>Inline-viestit</b> toimivat seuraavasti:
+
+<b>1.</b> Kirjoita tekstikenttään @Fk_kiltisbot, jolloin tekstikentän päälle ilmestyvät vaihtoehdot "Lähetä kiltistoimareille" ja "Lähetä kiltistoimareille anonyymisti".
+<b>2.</b> Kirjoita viesti, jonka haluat lähtettää.
+<b>3.</b> Valitse lähetysmuoto painamalla haluamaasi vaihtoehtoa.
+
+Jos tämä selitys ei ole riittävä, kuvallisen selityksen saa kirjoittamalla /kuva.
+
+<b>Yksityisviestit</b> ovat automaattisesti anonyymejä ja tuetut viestimuodot ovat ainakin teksti, kuva, video, stikkeri, ympyrävideo, gifi ja tiedosto. Botti mahdollistaa, että kiltistoimarit myös vastaavat botin kautta viesteihisi. Jos haluat, että kiltistoimikunta tietää kuka olet, allekirjoita viestisi.
+
+Botti tallentaa lähettämistäsi viesteistä sinun ja botin kahdenkeskisen keskustelun id:n ja lähetetyn viestin id:n välimuistissa olevaan tietorakanteeseen. Epärehellinen ylläpitäjä voisi periaatteessa identiteettisi sieltä onkia. Minun kiinnostukseni ei ainakaan tähän riitä ja lisäksi olen rehellinen, joten henkilöllisyytesi on turvassa.
+
+Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @Stippos.
+
+Muista myös kiltistoimikunnan muut palvelut kuten @TsufeBot.
