@@ -28,9 +28,8 @@ logger = logging.getLogger(__name__)
 updater = None
 
 #TODO: change these to fit your needs
-BOT_TOKEN = "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE"
-CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
-
+BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
+CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
 TO_WHOM = "Kiltistoimareille" #who you are
 GRAPHICAL_MANUAL = "AgADBAADMq8xG9nUAVI_RtZ5vEGqlCdEuhoABBZdb5JVge3pB_gGAAEC" #the address of the graphical manual image
 
