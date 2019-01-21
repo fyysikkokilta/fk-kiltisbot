@@ -12,6 +12,8 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 from uuid import uuid4
+import quickstart
+import time
 
 from telegram.utils.helpers import escape_markdown
 
@@ -37,6 +39,8 @@ GRAPHICAL_MANUAL = "AgADBAADMq8xG9nUAVI_RtZ5vEGqlCdEuhoABBZdb5JVge3pB_gGAAEC" #t
 confirmation_message = TO_WHOM + " lähetetty: "
 #history to enable replying
 sent_messages = {}
+events = quickstart.main()
+last_events = time.time()
 
 #read the manual file
 with open("ohje.txt", "r") as f:
@@ -169,6 +173,22 @@ def reply(bot, update):
         org = sent_messages[id]
         robust_send_message(bot, update.effective_message, org[0], org[1])
 
+def tapahtumat(bot, update):
+    global events
+    if last_events - time.time() > 3600:
+        events = quickstart.main()
+
+    text = ""
+    for x,y in events.items():
+        text = text + "\n<b>" + x + "</b>\n"
+        for i in y:
+            if len(i) == 1:
+                text = text + i[0] + "\n"
+            else:
+                text = text + "{} <a href=\"{}\">{}</a>\n".format(".".join(i[0].split("-")[::-1]), i[2], i[1])
+
+    bot.send_message(update.effective_chat.id, text, parse_mode = "HTML")
+
 def main():
     # Create the Updater and pass it your bot's token.
     global updater
@@ -186,6 +206,7 @@ def main():
     #send the graphic manual when user sends /kuva
     dp.add_handler(CommandHandler("kuva", kuva, Filters.private))
 
+    dp.add_handler(CommandHandler("tapahtumat", tapahtumat))
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(InlineQueryHandler(inlinequery))
     dp.add_handler(ChosenInlineResultHandler(inlineresult))
