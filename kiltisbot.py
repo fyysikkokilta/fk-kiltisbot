@@ -179,7 +179,8 @@ def reply(bot, update):
 
 def tapahtumat(bot, update):
     global events
-    if last_events - time.time() > 3600:
+    global last_events
+    if time.time() - last_events > 3600:
         events = quickstart.main()
 
     text = ""
