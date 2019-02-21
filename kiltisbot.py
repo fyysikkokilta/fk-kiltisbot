@@ -14,6 +14,7 @@ bot.
 from uuid import uuid4
 import quickstart
 import time
+import datetime
 
 from telegram.utils.helpers import escape_markdown
 
@@ -34,8 +35,8 @@ updater = None
 BOT_TOKEN = "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE"
 CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
 # testi
-# BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
-# CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
+#BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
+#CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
 TO_WHOM = "Kiltistoimareille" #who you are
 GRAPHICAL_MANUAL = "AgADBAADMq8xG9nUAVI_RtZ5vEGqlCdEuhoABBZdb5JVge3pB_gGAAEC" #the address of the graphical manual image
 
@@ -180,8 +181,9 @@ def reply(bot, update):
 def tapahtumat(bot, update):
     global events
     global last_events
-    if time.time() - last_events > 3600:
+    if time.time() - last_events > 600:
         events = quickstart.main()
+        last_events = time.time()
 
     text = ""
     for x,y in events.items():
@@ -193,6 +195,38 @@ def tapahtumat(bot, update):
                 text = text + "{} <a href=\"{}\">{}</a>\n".format(".".join(i[0].split("-")[::-1]), i[2], i[1])
 
     bot.send_message(update.effective_chat.id, text, parse_mode = "HTML")
+
+def tanaan_command(bot, update):
+    tanaan(bot, update, True)
+
+def tanaan_text(bot, update):
+    if "tänään" in update.effective_message.text.lower():
+        tanaan(bot, update, False)
+
+def tanaan(bot, update, command):
+    global events
+    global last_events
+    if time.time() - last_events > 600:
+        events = quickstart.main()
+        last_events = time.time()
+
+    text = "<b>TÄNÄÄN:</b>\n"
+
+    tanaan = datetime.datetime.today().isoformat()[:10] # 'Z' indicates UTC time
+
+    for x, y in events.items():
+        for i in y:
+            if i[0] == tanaan:
+                text += "<a href=\"{}\">{}</a>\n".format(i[2], i[1])
+
+    if not command and text == "<b>TÄNÄÄN:</b>\n":
+        return
+    elif text == "<b>TÄNÄÄN:</b>\n":
+        text = "<b>TÄNÄÄN</b> ei ole tapahtumia"
+        bot.send_message(update.effective_chat.id, text, parse_mode = "HTML")
+    else:
+        bot.send_message(update.effective_chat.id, text, parse_mode = "HTML")
+
 
 def main():
     # Create the Updater and pass it your bot's token.
@@ -212,6 +246,9 @@ def main():
     dp.add_handler(CommandHandler("kuva", kuva, Filters.private))
 
     dp.add_handler(CommandHandler("tapahtumat", tapahtumat))
+
+    dp.add_handler(CommandHandler("tanaan", tanaan_command))
+
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(InlineQueryHandler(inlinequery))
     dp.add_handler(ChosenInlineResultHandler(inlineresult))
@@ -225,6 +262,9 @@ def main():
     #if message sent to the receiving group is a reply to a private message sent by this bot
     #the bot will forward the reply to the original sender
     dp.add_handler(MessageHandler(Filters.reply, reply))
+
+    dp.add_handler(MessageHandler(Filters.text, tanaan_text))
+
 
     # Start the Bot
     updater.start_polling()

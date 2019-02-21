@@ -48,7 +48,7 @@ def main():
     service = build('calendar', 'v3', credentials=creds)
 
     # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    now = datetime.datetime.utcnow().today().isoformat() + 'Z' # 'Z' indicates UTC time
 
     for x,y in calendars.items():
 
