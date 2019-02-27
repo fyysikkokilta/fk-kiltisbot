@@ -18,9 +18,15 @@ import datetime
 
 from telegram.utils.helpers import escape_markdown
 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters
 import logging
+
+import db
+
+ALKU, LISAA, NOSTA, OHJAA = range(4)
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -44,8 +50,8 @@ GRAPHICAL_MANUAL = "AgADBAADMq8xG9nUAVI_RtZ5vEGqlCdEuhoABBZdb5JVge3pB_gGAAEC" #t
 confirmation_message = TO_WHOM + " lähetetty: "
 #history to enable replying
 sent_messages = {}
-events = quickstart.main()
-last_events = time.time()
+# events = quickstart.main()
+last_events = 0#time.time()
 
 #read the manual file
 with open("ohje.txt", "r") as f:
@@ -227,6 +233,130 @@ def tanaan(bot, update, command):
     else:
         bot.send_message(update.effective_chat.id, text, parse_mode = "HTML")
 
+def store(bot, update):
+
+    products = db.get_items()
+    print(products)
+
+    y = 2
+    x = len(products) // y
+
+    keyboard = [[]]
+
+    for i in range(x):
+        row = []
+        for j in range(y):
+            prod = products[j + i*y][0]
+            btn = InlineKeyboardButton(prod, callback_data = prod)
+            row.append(btn)
+        keyboard.append(row)
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text('Mitä laitetaan?', reply_markup=reply_markup)
+
+def button(bot, update):
+    query = update.callback_query
+    user = update.effective_user.id
+    time = datetime.datetime.today().isoformat()
+    price = db.get_price(query.data)
+
+    print(price)
+
+    db.add_transaction(user, query.data, time, price)
+    db.update_stock(query.data, -1)
+    db.update_balance(user, -price)
+
+    saldo = db.get_balance(user)
+    print(saldo)
+    query.edit_message_text(text="Ostit tuotteen: {}. \n Saldoa jäljellä {}€".format(query.data, saldo / 100))
+
+def rekisteroidy(bot, update):
+    user = update.effective_user
+    if len(db.get_user(user.id)) == 0:
+        name = ""
+        if user.first_name and user.last_name:
+            name = "{} {}".format(user.first_name, user.last_name)
+        else:
+            name = user.first_name
+
+        nick = ""
+        if user.username:
+            nick = user.username
+
+        db.add_user(user.id, nick, name, 0)
+
+        bot.send_message(update.effective_chat.id, "Onneksi olkoon! Sinut on nyt lisätty käyttäjäksi.")
+    else:
+        bot.send_message(update.effective_chat.id, "Olet jo käyttäjä.")
+
+def saldo(bot, update):
+
+    # nayta = ReplyKeyboardButton("Näytä saldo", callback_data = prod)
+    # lisaa = ReplyKeyboardButton("Lisää saldoa", callback_data = prod)
+    # nosta = ReplyKeyboardButton("Nosta rahaa saldosta", callback_data = prod)
+
+    keyboard = [["Näytä saldo"], ["Lisää saldoa"], ["Nosta rahaa saldosta"]]
+
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
+
+    update.message.reply_text('Mitä haluaisit tehdä?', reply_markup=reply_markup)
+
+    return OHJAA
+
+def ohjaa(bot, update):
+    if update.effective_message.text == "Näytä saldo":
+        saldo = db.get_balance(update.effective_user.id)
+        bot.send_message(update.effective_chat.id, "Saldosi on {}€.".format(saldo / 100))
+        return ConversationHandler.END
+
+    elif update.effective_message.text == "Lisää saldoa":
+        update.message.reply_text("Paljonko saldoa haluaisit lisätä? Anna summa muodossa x.xx ja käytä desimaalierottimena pistettä.")
+        return LISAA
+
+    elif update.effective_message.text == "Nosta rahaa saldosta":
+        update.message.reply_text("Paljonko rahaa haluaisit nostaa saldosta? Anna summa muodossa x.xx ja käytä desimaalierottimena pistettä.")
+        return NOSTA
+    else:
+        return ConversationHandler.END
+
+def lisaa(bot, update):
+    maara = 0
+    try:
+        maara = int(float(update.message.text) * 100)
+    except ValueError:
+        bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Lisääminen keskeytetty.")
+        return ConversationHandler.END
+
+    user = update.effective_user.id
+    time = datetime.datetime.today().isoformat()
+
+    db.update_balance(update.effective_user.id, maara)
+    db.add_transaction(user, "PANO", time, maara)
+
+    saldo = db.get_balance(update.effective_user.id)
+    bot.send_message(update.message.chat.id, "Saldon lisääminen onnistui. Saldosi on nyt {}€".format(saldo / 100))
+
+    return ConversationHandler.END
+
+def nosta(bot, update):
+    maara = 0
+    try:
+        maara = int(float(update.message.text) * 100)
+    except ValueError:
+        bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Nosto keskeytetty.")
+        return ConversationHandler.END
+
+    user = update.effective_user.id
+    time = datetime.datetime.today().isoformat()
+
+    db.update_balance(update.effective_user.id, -maara)
+    db.add_transaction(user, "NOSTO", time, maara)
+
+    saldo = db.get_balance(update.effective_user.id)
+    bot.send_message(update.message.chat.id, "Rahan nostaminen saldosta onnistui. Saldosi on nyt {}€".format(saldo / 100))
+
+    return ConversationHandler.END
 
 def main():
     # Create the Updater and pass it your bot's token.
@@ -236,9 +366,20 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
+    saldo_handler = ConversationHandler(
+        entry_points = [CommandHandler("saldo", saldo)],
+        states = {
+            ALKU: [MessageHandler(Filters.text, saldo)],
+            OHJAA: [RegexHandler('^(Näytä saldo|Lisää saldoa|Nosta rahaa saldosta)$', ohjaa)],
+            LISAA: [MessageHandler(Filters.text, lisaa)],
+            NOSTA: [MessageHandler(Filters.text, nosta)],
+        },
+        fallbacks = [CommandHandler("lopeta", lopeta)]
+    )
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
 
+    dp.add_handler(saldo_handler, Filters.private)
     #send the manual when user sends /help
     dp.add_handler(CommandHandler("help", help, Filters.private))
 
@@ -249,6 +390,11 @@ def main():
 
     dp.add_handler(CommandHandler("tanaan", tanaan_command))
 
+    dp.add_handler(CommandHandler("store", store, Filters.private))
+
+    dp.add_handler(CommandHandler("rekisteroidy", rekisteroidy, Filters.private))
+
+    dp.add_handler(CallbackQueryHandler(button))
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(InlineQueryHandler(inlinequery))
     dp.add_handler(ChosenInlineResultHandler(inlineresult))

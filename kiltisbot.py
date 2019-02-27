@@ -18,6 +18,7 @@ import datetime
 
 from telegram.utils.helpers import escape_markdown
 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters
 import logging
