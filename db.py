@@ -11,7 +11,7 @@ def add_user(id, nick, nimi, saldo):
 def add_transaction(user, tuote, aika, hinta):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
-    c.execute("INSERT INTO transactions VALUES (?,?,?,?)", (user, tuote, hinta, aika))
+    c.execute("INSERT INTO transactions (id, user, tuote, hinta, aika) VALUES (NULL,?,?,?,?)", (user, tuote, hinta, aika))
     conn.commit()
     conn.close()
 
@@ -69,6 +69,20 @@ def get_items():
     conn.close()
     return cur
 
+def get_last_transaction(id):
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (id,)).fetchall()[0]
+    conn.close()
+    return cur
+
+def delete_transaction(id):
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("DELETE FROM transactions WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
 def update_stock(nimi, delta):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
@@ -103,12 +117,24 @@ def print_transactions():
 
 
 
-def create_database():
+def create_invetory():
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
     c.execute("CREATE TABLE inventory (nimi text, hinta int, maara int)")
+    conn.commit()
+    conn.close()
+
+def create_users():
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
     c.execute("CREATE TABLE users (id int, nick text, nimi text, saldo int)")
-    c.execute("CREATE TABLE transactions (user int, tuote text, hinta int, aika text)")
+    conn.commit()
+    conn.close()
+
+def create_transactions():
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    c.execute("CREATE TABLE transactions (id integer primary key, user int, tuote text, hinta int, aika text)")
     conn.commit()
     conn.close()
 
