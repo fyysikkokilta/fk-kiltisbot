@@ -26,7 +26,7 @@ import logging
 import db
 import piikki
 
-ALKU, LISAA, NOSTA, OHJAA, POISTA = range(5)
+ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN= range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
 
 # Enable logging
@@ -238,77 +238,39 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    poisto_handler = ConversationHandler(
-        entry_points = [CommandHandler("poista_edellinen", piikki.poistatko, Filters.private)],
-        states = {
-            POISTA: [MessageHandler(Filters.text, piikki.poista)]
-        },
-        fallbacks = [CommandHandler("lopeta", piikki.lopeta), MessageHandler(Filters.all, piikki.lopeta)],
-        allow_reentry = True
-    )
 
-    saldo_handler = ConversationHandler(
-        entry_points = [CommandHandler("saldo", piikki.saldo, Filters.private)],
-        states = {
-            ALKU: [MessageHandler(Filters.text, piikki.saldo)],
-            OHJAA: [RegexHandler('^({}|{}|{})$'.format(saldo_sanat[0], saldo_sanat[1], saldo_sanat[2]), piikki.ohjaa)],
-            LISAA: [MessageHandler(Filters.text, piikki.lisaa)],
-            NOSTA: [MessageHandler(Filters.text, piikki.nosta)],
-        },
-        fallbacks = [CommandHandler("lopeta", piikki.lopeta), MessageHandler(Filters.all, piikki.lopeta)],
-        allow_reentry = True
-
-    )
-    # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
 
-    dp.add_handler(saldo_handler)
-    dp.add_handler(poisto_handler)
-    #send the manual when user sends /help
-    dp.add_handler(CommandHandler("help", help, Filters.private))
+    dp.add_handler(piikki.saldo_handler)
+    dp.add_handler(piikki.poisto_handler)
+    dp.add_handler(piikki.register_handler)
 
-    #send the graphic manual when user sends /kuva
-    dp.add_handler(CommandHandler("kuva", kuva, Filters.private))
+    dp.add_handler(CommandHandler("help",          help, Filters.private))
+    dp.add_handler(CommandHandler("kuva",          kuva, Filters.private))
+    dp.add_handler(CommandHandler("tapahtumat",    tapahtumat))
+    dp.add_handler(CommandHandler("tanaan",        tanaan_command))
+    dp.add_handler(CommandHandler("osta",          piikki.store, Filters.private))
+    dp.add_handler(CommandHandler("rekisteroidy",  piikki.rekisteroidy, Filters.private))
+    dp.add_handler(CommandHandler("commands",       piikki.commands, Filters.private))
+    dp.add_handler(CommandHandler("hinnasto",       piikki.hinnasto, Filters.private))
+    dp.add_handler(CommandHandler("komennot",       piikki.komennot, Filters.private))
 
-    dp.add_handler(CommandHandler("tapahtumat", tapahtumat))
-
-    dp.add_handler(CommandHandler("tanaan", tanaan_command))
-
-    dp.add_handler(CommandHandler("store", piikki.store, Filters.private))
-
-    dp.add_handler(CommandHandler("rekisteroidy", piikki.rekisteroidy, Filters.private))
-
-    dp.add_handler(CommandHandler("export_users", piikki.export_users, Filters.private))
-
+    dp.add_handler(CommandHandler("export_users",        piikki.export_users, Filters.private))
     dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
+    dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
+    dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
 
-    dp.add_handler(CommandHandler("export_inventory", piikki.export_inventory, Filters.private))
-
-    dp.add_handler(CommandHandler("import_inventory", piikki.import_inventory, Filters.private))
-
-    dp.add_handler(CommandHandler("commands", piikki.commands, Filters.private))
-
-    dp.add_handler(CommandHandler("hinnasto", piikki.hinnasto, Filters.private))
+    dp.add_handler(MessageHandler(Filters.private, send_from_private))
+    dp.add_handler(MessageHandler(Filters.reply, reply))
+    dp.add_handler(MessageHandler(Filters.text, tanaan_text))
 
     dp.add_handler(CallbackQueryHandler(piikki.button))
-    # on noncommand i.e message - echo the message on Telegram
+
     dp.add_handler(InlineQueryHandler(inlinequery))
     dp.add_handler(ChosenInlineResultHandler(inlineresult))
 
-    # log all errors
     dp.add_error_handler(error)
 
-    #forward private messages to the receiving group
-    dp.add_handler(MessageHandler(Filters.private, send_from_private))
-
-    #if message sent to the receiving group is a reply to a private message sent by this bot
-    #the bot will forward the reply to the original sender
-    dp.add_handler(MessageHandler(Filters.reply, reply))
-
-    dp.add_handler(MessageHandler(Filters.text, tanaan_text))
-
-
-    # Start the Bot
     updater.start_polling()
 
     # Block until the user presses Ctrl-C or the process receives SIGINT,

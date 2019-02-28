@@ -115,7 +115,7 @@ def export_transactions():
     values = result.get('values', [])
 
     end = 0
-    if len(values) > 0:
+    if len(values) > 1:
         end = int(values[-1][0])
 
     trans = db.get_transactions_after(end)

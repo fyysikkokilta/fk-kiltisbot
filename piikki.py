@@ -1,5 +1,5 @@
 
-ALKU, LISAA, NOSTA, OHJAA, POISTA = range(5)
+ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,
@@ -14,6 +14,7 @@ import math
 import drive
 
 admin_ids = [51141559]
+
 
 def store(bot, update):
     if not is_registered(bot, update):
@@ -58,11 +59,36 @@ def button(bot, update):
 
     saldo = db.get_balance(user)
     print(saldo)
-    query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldoa jäljellä {:.2f}€".format(query.data, saldo / 100))
+    query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100))
 
 def rekisteroidy(bot, update):
+    user = update.effective_user.id
+    if len(db.get_user(user)) > 0:
+        bot.send_message(update.effective_chat.id, "Olet jo käyttäjä.")
+        return ConversationHandler.END
+    else:
+
+        keyboard = [["Kyllä"], ["Ei"]]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
+
+        update.message.reply_text("""<b>Käyttöehdot:</b>
+
+Tämä on sähköinen kiltispiikki, jonka avulla voit ajaa kiltiksen piikkiä 100% pienemmällä oman niemen etsiskelyllä sekaisin olevasta paperipinkasta ja ilman ikäviä desimaalilukujen päässälaskuja.
+
+Piikin käyttämistä varten sinusta tallennetaan nimesi sekä Telegramin käyttäjätunnuksesi.
+
+Myös tekemäsi ostokset tallennetaan, jotta ne on vahingon sattuessa myös mahdollista peruuttaa kätevästi. Ostoksista kertyvää dataa käytetään myös kiltiksen valikoiman kehittämiseen.
+
+<b>Olethan ystävällinen ja käytät piikkiä vastuullisesti :)</b>
+
+Onko tämä fine?
+""", reply_markup=reply_markup, parse_mode = "HTML")
+
+    return HYVAKSYN
+
+def hyvaksyn(bot, update):
     user = update.effective_user
-    if len(db.get_user(user.id)) == 0:
+    if update.message.text == "Kyllä":
         name = ""
         if user.first_name and user.last_name:
             name = "{} {}".format(user.first_name, user.last_name)
@@ -75,9 +101,11 @@ def rekisteroidy(bot, update):
 
         db.add_user(user.id, nick, name, 0)
 
-        bot.send_message(update.effective_chat.id, "Onneksi olkoon! Sinut on nyt lisätty käyttäjäksi.")
+        bot.send_message(update.effective_chat.id, "Onneksi olkoon! Sinut on nyt lisätty käyttäjäksi. Kirjoittamalla /komennot näet mitä kaikkea voit botilla tehdä.", reply_markup = ReplyKeyboardRemove())
+        return ConversationHandler.END
     else:
-        bot.send_message(update.effective_chat.id, "Olet jo käyttäjä.")
+        bot.send_message(update.effective_chat.id, "Ei se mitään, paperinen piikki on myös ihan okei. Minä odottelen täällä jos muutatkin mielesi :)", reply_markup = ReplyKeyboardRemove())
+        return ConversationHandler.END
 
 def saldo(bot, update):
     if not is_registered(bot, update):
@@ -120,9 +148,11 @@ def lisaa(bot, update):
 
     user = update.effective_user.id
     time = datetime.datetime.today().isoformat()
+    name = db.get_user(user)[0][2]
+
 
     db.update_balance(update.effective_user.id, maara)
-    db.add_transaction(user, "PANO", time, maara)
+    db.add_transaction(user, name, "PANO", time, maara)
 
     saldo = db.get_balance(update.effective_user.id)
     bot.send_message(update.message.chat.id, "Saldon lisääminen onnistui. Saldosi on nyt {:.2f}€".format(saldo / 100), reply_markup = ReplyKeyboardRemove())
@@ -139,9 +169,10 @@ def nosta(bot, update):
 
     user = update.effective_user.id
     time = datetime.datetime.today().isoformat()
+    name = db.get_user(user)[0][2]
 
     db.update_balance(update.effective_user.id, -maara)
-    db.add_transaction(user, "NOSTO", time, maara)
+    db.add_transaction(user, name, "NOSTO", time, maara)
 
     saldo = db.get_balance(update.effective_user.id)
     bot.send_message(update.message.chat.id, "Rahan nostaminen saldosta onnistui. Saldosi on nyt {:.2f}€".format(saldo / 100), reply_markup = ReplyKeyboardRemove())
@@ -222,6 +253,18 @@ def import_inventory(bot, update):
         drive.import_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!")
 
+def komennot(bot, update):
+    if is_registered(bot, update):
+        bot.send_message(update.message.chat.id,
+        """Komennot:
+/piikki_ohje Ohje kaupan käyttöön.
+/osta Osta asioita piikilläsi.
+/hinnasto Tulosta tuotteiden hinnat.
+/saldo Tarkista piikkisi arvo ja lisää ja poista rahaa.
+/poista_edellinen Poista edellinen tapahtuma (ostos tai piikin muuttaminen). Poistaa tapahtuman oikeasti, joten voit toistaa toimenpiteen monta kertaa.
+/komennot Tää.
+""")
+
 def commands(bot, update):
     if is_admin(bot, update):
         bot.send_message(update.message.chat.id,
@@ -255,3 +298,33 @@ def is_admin(bot, update):
     else:
         bot.send_message(update.message.chat.id, "You are not authorized.")
         return False
+
+poisto_handler = ConversationHandler(
+    entry_points = [CommandHandler("poista_edellinen", poistatko, Filters.private)],
+    states = {
+        POISTA: [MessageHandler(Filters.text, poista)]
+    },
+    fallbacks = [CommandHandler("lopeta", lopeta), MessageHandler(Filters.all, lopeta)],
+    allow_reentry = True
+)
+
+saldo_handler = ConversationHandler(
+    entry_points = [CommandHandler("saldo", saldo, Filters.private)],
+    states = {
+        ALKU: [MessageHandler(Filters.text, saldo)],
+        OHJAA: [RegexHandler('^({}|{}|{})$'.format(saldo_sanat[0], saldo_sanat[1], saldo_sanat[2]), ohjaa)],
+        LISAA: [MessageHandler(Filters.text, lisaa)],
+        NOSTA: [MessageHandler(Filters.text, nosta)],
+    },
+    fallbacks = [CommandHandler("lopeta", lopeta), MessageHandler(Filters.all, lopeta)],
+    allow_reentry = True
+
+)
+
+register_handler = ConversationHandler(
+    entry_points = [CommandHandler("rekisteroidy", rekisteroidy, Filters.private)],
+    states = {
+        HYVAKSYN: [MessageHandler(Filters.all, hyvaksyn)]
+    },
+    fallbacks = [CommandHandler("lopeta", lopeta)]
+)
