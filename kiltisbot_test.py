@@ -34,8 +34,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-updater = None
 
+updater = None
 #tuotanto
 #BOT_TOKEN = "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE"
 #CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
@@ -276,6 +276,15 @@ def main():
 
     dp.add_handler(CommandHandler("rekisteroidy", piikki.rekisteroidy, Filters.private))
 
+    dp.add_handler(CommandHandler("export_users", piikki.export_users, Filters.private))
+
+    dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
+
+    dp.add_handler(CommandHandler("export_inventory", piikki.export_inventory, Filters.private))
+
+    dp.add_handler(CommandHandler("import_inventory", piikki.import_inventory, Filters.private))
+
+    dp.add_handler(CommandHandler("commands", piikki.commands, Filters.private))
     dp.add_handler(CallbackQueryHandler(piikki.button))
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(InlineQueryHandler(inlinequery))

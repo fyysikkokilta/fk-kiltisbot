@@ -11,6 +11,9 @@ from telegram.ext import (Updater, InlineQueryHandler, CommandHandler, ChosenInl
 import datetime
 import db
 import math
+import drive
+
+admin_ids = [51141559]
 
 def store(bot, update):
     if not is_registered(bot, update):
@@ -188,6 +191,48 @@ def poista(bot, update):
 
     return ConversationHandler.END
 
+def export_users(bot, update):
+    if is_admin(bot, update):
+        drive.export_users()
+        bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!")
+
+
+
+def export_transactions(bot, update):
+    if is_admin(bot, update):
+        drive.export_transactions()
+        bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!")
+
+
+def export_inventory(bot, update):
+    if is_admin(bot, update):
+        drive.export_inventory()
+        bot.send_message(update.message.chat.id, "Tuotteiden vieminen onnistui!")
+
+
+def import_inventory(bot, update):
+    if is_admin(bot, update):
+        drive.import_inventory()
+        bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!")
+
+def commands(bot, update):
+    if is_admin(bot, update):
+        bot.send_message(update.message.chat.id,
+        """Komennot:\n
+        /help\n
+        /saldo\n
+        /poista_edellinen\n
+        /kuva\n
+        /tapahtumat\n
+        /tanaan\n
+        /store\n
+        /rekisteroidy\n
+        /export_users\n
+        /export_transactions\n
+        /export_inventory\n
+        /import_inventory""")
+
+
 def is_registered(bot, update):
     user = update.effective_user
     if len(db.get_user(user.id)) == 0:
@@ -195,3 +240,10 @@ def is_registered(bot, update):
         return False
     else:
         return True
+
+def is_admin(bot, update):
+    if update.effective_user.id in admin_ids:
+        return True
+    else:
+        bot.send_message(update.message.chat.id, "You are not authorized.")
+        return False

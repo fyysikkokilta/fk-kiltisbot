@@ -48,6 +48,13 @@ def get_user(id):
     conn.close()
     return cur
 
+def get_users():
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("SELECT * from users").fetchall()
+    conn.close()
+    return cur
+
 def get_balance(id):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
@@ -69,10 +76,24 @@ def get_items():
     conn.close()
     return cur
 
-def get_last_transaction(id):
+def get_stocks():
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
-    cur = c.execute("SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (id,)).fetchall()[0]
+    cur = c.execute("SELECT maara FROM inventory").fetchall()
+    conn.close()
+    return cur
+
+def get_last_transaction(user):
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (user,)).fetchall()[0]
+    conn.close()
+    return cur
+
+def get_transactions_after(id):
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("SELECT * FROM transactions WHERE id > ? ", (id,)).fetchall()
     conn.close()
     return cur
 
