@@ -8,10 +8,10 @@ def add_user(id, nick, nimi, saldo):
     conn.close()
 
 
-def add_transaction(user, tuote, aika, hinta):
+def add_transaction(user, name, tuote, aika, hinta):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
-    c.execute("INSERT INTO transactions (id, user, tuote, hinta, aika) VALUES (NULL,?,?,?,?)", (user, tuote, hinta, aika))
+    c.execute("INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES (NULL,?,?,?,?,?)", (user, name, tuote, hinta, aika))
     conn.commit()
     conn.close()
 
@@ -47,6 +47,7 @@ def get_user(id):
     cur = c.execute("SELECT * from users WHERE id=?", (id,)).fetchall()
     conn.close()
     return cur
+
 
 def get_users():
     conn = sqlite3.connect('kiltis.db')
@@ -155,7 +156,7 @@ def create_users():
 def create_transactions():
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
-    c.execute("CREATE TABLE transactions (id integer primary key, user int, tuote text, hinta int, aika text)")
+    c.execute("CREATE TABLE transactions (id integer primary key, user int, user_name text, tuote text, hinta int, aika text)")
     conn.commit()
     conn.close()
 

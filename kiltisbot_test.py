@@ -243,7 +243,8 @@ def main():
         states = {
             POISTA: [MessageHandler(Filters.text, piikki.poista)]
         },
-        fallbacks = [CommandHandler("lopeta", piikki.lopeta)]
+        fallbacks = [CommandHandler("lopeta", piikki.lopeta), MessageHandler(Filters.all, piikki.lopeta)],
+        allow_reentry = True
     )
 
     saldo_handler = ConversationHandler(
@@ -254,7 +255,8 @@ def main():
             LISAA: [MessageHandler(Filters.text, piikki.lisaa)],
             NOSTA: [MessageHandler(Filters.text, piikki.nosta)],
         },
-        fallbacks = [CommandHandler("lopeta", piikki.lopeta)]
+        fallbacks = [CommandHandler("lopeta", piikki.lopeta), MessageHandler(Filters.all, piikki.lopeta)],
+        allow_reentry = True
 
     )
     # on different commands - answer in Telegram
@@ -285,6 +287,9 @@ def main():
     dp.add_handler(CommandHandler("import_inventory", piikki.import_inventory, Filters.private))
 
     dp.add_handler(CommandHandler("commands", piikki.commands, Filters.private))
+
+    dp.add_handler(CommandHandler("hinnasto", piikki.hinnasto, Filters.private))
+
     dp.add_handler(CallbackQueryHandler(piikki.button))
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(InlineQueryHandler(inlinequery))

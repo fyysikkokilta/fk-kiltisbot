@@ -22,7 +22,7 @@ def store(bot, update):
     products = db.get_items()
     print(products)
 
-    y = 3
+    y = 2
     x = math.ceil(len(products) / y)
 
     keyboard = [[]]
@@ -32,7 +32,8 @@ def store(bot, update):
         for j in range(y):
             if j + i*y < len(products):
                 prod = products[j + i*y][0]
-                btn = InlineKeyboardButton(prod, callback_data = prod)
+                price = products[j + i*y][1] / 100
+                btn = InlineKeyboardButton("{} {:.2f}€".format(prod, price), callback_data = prod)
                 row.append(btn)
         keyboard.append(row)
 
@@ -48,16 +49,16 @@ def button(bot, update):
     user = update.effective_user.id
     time = datetime.datetime.today().isoformat()
     price = db.get_price(query.data)
-
+    name = db.get_user(user)[0][2]
     print(price)
 
-    db.add_transaction(user, query.data, time, price)
+    db.add_transaction(user, name, query.data, time, price)
     db.update_stock(query.data, -1)
     db.update_balance(user, -price)
 
     saldo = db.get_balance(user)
     print(saldo)
-    query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldoa jäljellä {}€".format(query.data, saldo / 100))
+    query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldoa jäljellä {:.2f}€".format(query.data, saldo / 100))
 
 def rekisteroidy(bot, update):
     user = update.effective_user
@@ -96,15 +97,15 @@ def ohjaa(bot, update):
     print(update.effective_message.text)
     if update.effective_message.text == saldo_sanat[0]:
         saldo = db.get_balance(update.effective_user.id)
-        bot.send_message(update.effective_chat.id, "Saldosi on {}€.".format(saldo / 100))
+        bot.send_message(update.effective_chat.id, "Saldosi on {:.2f}€.".format(saldo / 100), reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
 
     elif update.effective_message.text == saldo_sanat[1]:
-        update.message.reply_text("Paljonko saldoa haluaisit lisätä? Anna summa muodossa x.xx ja käytä desimaalierottimena pistettä.")
+        update.message.reply_text("Paljonko saldoa haluaisit lisätä?", reply_markup = ReplyKeyboardRemove())
         return LISAA
 
     elif update.effective_message.text == saldo_sanat[2]:
-        update.message.reply_text("Paljonko rahaa haluaisit nostaa saldosta? Anna summa muodossa x.xx ja käytä desimaalierottimena pistettä.")
+        update.message.reply_text("Paljonko rahaa haluaisit nostaa saldosta?", reply_markup = ReplyKeyboardRemove())
         return NOSTA
     else:
         return ConversationHandler.END
@@ -112,9 +113,9 @@ def ohjaa(bot, update):
 def lisaa(bot, update):
     maara = 0
     try:
-        maara = int(float(update.message.text) * 100)
+        maara = int(float(update.message.text.replace(",", ".")) * 100)
     except ValueError:
-        bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Lisääminen keskeytetty.")
+        bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Lisääminen keskeytetty.", reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
 
     user = update.effective_user.id
@@ -124,16 +125,16 @@ def lisaa(bot, update):
     db.add_transaction(user, "PANO", time, maara)
 
     saldo = db.get_balance(update.effective_user.id)
-    bot.send_message(update.message.chat.id, "Saldon lisääminen onnistui. Saldosi on nyt {}€".format(saldo / 100))
+    bot.send_message(update.message.chat.id, "Saldon lisääminen onnistui. Saldosi on nyt {:.2f}€".format(saldo / 100), reply_markup = ReplyKeyboardRemove())
 
     return ConversationHandler.END
 
 def nosta(bot, update):
     maara = 0
     try:
-        maara = int(float(update.message.text) * 100)
+        maara = int(float(update.message.text.replace(",", ".")) * 100)
     except ValueError:
-        bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Nosto keskeytetty.")
+        bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Nosto keskeytetty.", reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
 
     user = update.effective_user.id
@@ -143,7 +144,7 @@ def nosta(bot, update):
     db.add_transaction(user, "NOSTO", time, maara)
 
     saldo = db.get_balance(update.effective_user.id)
-    bot.send_message(update.message.chat.id, "Rahan nostaminen saldosta onnistui. Saldosi on nyt {}€".format(saldo / 100))
+    bot.send_message(update.message.chat.id, "Rahan nostaminen saldosta onnistui. Saldosi on nyt {:.2f}€".format(saldo / 100), reply_markup = ReplyKeyboardRemove())
 
     return ConversationHandler.END
 
@@ -159,14 +160,13 @@ def poistatko(bot, update):
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
 
     edellinen = db.get_last_transaction(update.effective_user.id)
-    aika = edellinen[4][:16].split("T")
+    aika = edellinen[5][:16].split("T")
     paiva = aika[0]
     aika = aika[1]
-    tuote = edellinen[2]
-    hinta = str(edellinen[3] / 100)
+    tuote = edellinen[3]
+    hinta = edellinen[4] / 100
 
-    update.message.reply_text("""Haluatko todella poistaa tapahtuman \n{} {} {} {}€?
-    Kirjoita missä vaiheessa tahansa /lopeta keskeyttääksesi toiminnon.""".format(paiva, aika, tuote, hinta), reply_markup=reply_markup)
+    update.message.reply_text("""Haluatko todella poistaa tapahtuman:\n{}  {}   {}   {:.2f}€?\n\nKirjoita missä vaiheessa tahansa /lopeta keskeyttääksesi toiminnon.""".format(paiva, aika, tuote, hinta), reply_markup=reply_markup)
 
     return POISTA
 
@@ -176,26 +176,33 @@ def poista(bot, update):
         edellinen = db.get_last_transaction(update.effective_user.id)
         print(edellinen[0])
 
-        summa = -edellinen[3] if edellinen[2] == "PANO" else edellinen[3]
+        summa = -edellinen[4] if edellinen[3] == "PANO" else edellinen[4]
 
-        if edellinen[2] != "PANO" and edellinen[2] != "NOSTO":
-            db.update_stock(edellinen[2], 1)
+        if edellinen[3] != "PANO" and edellinen[3] != "NOSTO":
+            db.update_stock(edellinen[3], 1)
 
         db.update_balance(user, summa)
         db.delete_transaction(edellinen[0])
         saldo = db.get_balance(user)
 
-        bot.send_message(update.message.chat.id, "Tapahtuma poistettu. Tilisi saldo on {}€.".format(saldo / 100))
+        bot.send_message(update.message.chat.id, "Tapahtuma poistettu. Tilisi saldo on {:.2f}€.".format(saldo / 100), reply_markup = ReplyKeyboardRemove())
     else:
-        bot.send_message(update.message.chat.id, "Tapahtumaa ei poistettu")
+        bot.send_message(update.message.chat.id, "Tapahtumaa ei poistettu", reply_markup = ReplyKeyboardRemove())
 
     return ConversationHandler.END
+
+def hinnasto(bot, update):
+    items = db.get_items()
+    text = "```\nHinnasto:\n"
+    for i in items:
+        text += "{:18} {:.2f}€\n".format(i[0], i[1] /100)
+    bot.send_message(update.message.chat.id, text + "```", parse_mode="MARKDOWN")
+
 
 def export_users(bot, update):
     if is_admin(bot, update):
         drive.export_users()
         bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!")
-
 
 
 def export_transactions(bot, update):
@@ -218,19 +225,20 @@ def import_inventory(bot, update):
 def commands(bot, update):
     if is_admin(bot, update):
         bot.send_message(update.message.chat.id,
-        """Komennot:\n
-        /help\n
-        /saldo\n
-        /poista_edellinen\n
-        /kuva\n
-        /tapahtumat\n
-        /tanaan\n
-        /store\n
-        /rekisteroidy\n
-        /export_users\n
-        /export_transactions\n
-        /export_inventory\n
-        /import_inventory""")
+        """Komennot:
+/help
+/saldo
+/poista_edellinen
+/kuva
+/tapahtumat
+/tanaan
+/store
+/rekisteroidy
+/export_users
+/export_transactions
+/export_inventory
+/import_inventory
+/hinnasto""")
 
 
 def is_registered(bot, update):
