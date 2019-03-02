@@ -286,7 +286,7 @@ def komennot(bot, update):
         bot.send_message(update.message.chat.id,
         """Komennot:
 /piikki_ohje Ohje kaupan käyttöön.
-/osta Osta asioita piikilläsi.
+/kauppa Osta asioita piikilläsi.
 /hinnasto Tulosta tuotteiden hinnat.
 /saldo Tarkista piikkisi arvo ja lisää ja poista rahaa.
 /poista_edellinen Poista viimeisin tapahtuma.
