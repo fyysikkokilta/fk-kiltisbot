@@ -15,6 +15,8 @@ import drive
 
 admin_ids = [51141559]
 
+with open("piikki_ohje.txt", "r") as f:
+    ohje_teksti = f.read()
 
 def store(bot, update):
     if not is_registered(bot, update):
@@ -37,7 +39,7 @@ def store(bot, update):
                 btn = InlineKeyboardButton("{} {:.2f}€".format(prod, price), callback_data = prod)
                 row.append(btn)
         keyboard.append(row)
-
+    keyboard.append([InlineKeyboardButton("Poistu", callback_data="Poistu")])
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     update.message.reply_text('Mitä laitetaan?', reply_markup=reply_markup)
@@ -47,6 +49,11 @@ def button(bot, update):
         return
 
     query = update.callback_query
+
+    if query.data == "Poistu":
+        query.edit_message_text(text="Osto keskeytetty")
+        return
+
     user = update.effective_user.id
     time = datetime.datetime.today().isoformat()
     price = db.get_price(query.data)
@@ -101,7 +108,7 @@ def hyvaksyn(bot, update):
 
         db.add_user(user.id, nick, name, 0)
 
-        bot.send_message(update.effective_chat.id, "Onneksi olkoon! Sinut on nyt lisätty käyttäjäksi. Kirjoittamalla /komennot näet mitä kaikkea voit botilla tehdä.", reply_markup = ReplyKeyboardRemove())
+        bot.send_message(update.effective_chat.id, "Onneksi olkoon! Sinut on nyt lisätty käyttäjäksi. Kirjoittamalla /piikki_ohje näet mitä kaikkea sähköisellä piikillä voi tehdä.", reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
     else:
         bot.send_message(update.effective_chat.id, "Ei se mitään, paperinen piikki on myös ihan okei. Minä odottelen täällä jos muutatkin mielesi :)", reply_markup = ReplyKeyboardRemove())
@@ -129,11 +136,11 @@ def ohjaa(bot, update):
         return ConversationHandler.END
 
     elif update.effective_message.text == saldo_sanat[1]:
-        update.message.reply_text("Paljonko saldoa haluaisit lisätä?", reply_markup = ReplyKeyboardRemove())
+        update.message.reply_text("Paljonko saldoa haluaisit lisätä? Anna positiivinen desimaaliluku.", reply_markup = ReplyKeyboardRemove())
         return LISAA
 
     elif update.effective_message.text == saldo_sanat[2]:
-        update.message.reply_text("Paljonko rahaa haluaisit nostaa saldosta?", reply_markup = ReplyKeyboardRemove())
+        update.message.reply_text("Paljonko rahaa haluaisit nostaa saldosta? Anna positiivinen desimaaliluku.", reply_markup = ReplyKeyboardRemove())
         return NOSTA
     else:
         return ConversationHandler.END
@@ -142,6 +149,8 @@ def lisaa(bot, update):
     maara = 0
     try:
         maara = int(float(update.message.text.replace(",", ".")) * 100)
+        if maara < 0:
+            raise ValueError
     except ValueError:
         bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Lisääminen keskeytetty.", reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
@@ -163,6 +172,8 @@ def nosta(bot, update):
     maara = 0
     try:
         maara = int(float(update.message.text.replace(",", ".")) * 100)
+        if maara < 0:
+            raise ValueError
     except ValueError:
         bot.send_message(update.message.chat.id, "Antamasi luku ei kelpaa. Nosto keskeytetty.", reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
@@ -183,11 +194,18 @@ def lopeta(bot, update):
     update.message.reply_text('Toiminto keskeytetty.', reply_markup = ReplyKeyboardRemove())
     return ConversationHandler.END
 
+def ei_lopetettavaa(bot, update):
+    update.message.reply_text('Sinulla ei ollut käynnissä toimintoa, jonka voisi lopettaa.', reply_markup = ReplyKeyboardRemove())
+
+def tuntematon(bot, update):
+    update.message.reply_text('Odottamaton komento. Toiminto keskeytetty.', reply_markup = ReplyKeyboardRemove())
+    return ConversationHandler.END
+
 def poistatko(bot, update):
     if not is_registered(bot, update):
         return
 
-    keyboard = [["Kyllä", "Ei"]]
+    keyboard = [["Kyllä"],[ "Ei"]]
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
 
     edellinen = db.get_last_transaction(update.effective_user.id)
@@ -210,7 +228,10 @@ def poista(bot, update):
         summa = -edellinen[4] if edellinen[3] == "PANO" else edellinen[4]
 
         if edellinen[3] != "PANO" and edellinen[3] != "NOSTO":
-            db.update_stock(edellinen[3], 1)
+            try:
+                db.update_stock(edellinen[3], 1)
+            except TypeError:
+                pass
 
         db.update_balance(user, summa)
         db.delete_transaction(edellinen[0])
@@ -226,32 +247,39 @@ def hinnasto(bot, update):
     items = db.get_items()
     text = "```\nHinnasto:\n"
     for i in items:
-        text += "{:18} {:.2f}€\n".format(i[0], i[1] /100)
+        text += "{:_<18.18} {:.2f}€\n".format(i[0].strip() + " ", i[1] /100)
     bot.send_message(update.message.chat.id, text + "```", parse_mode="MARKDOWN")
 
+
+def ohje(bot, update):
+    global ohje_teksti
+    bot.send_message(update.effective_user.id, ohje_teksti, parse_mode = "HTML")
 
 def export_users(bot, update):
     if is_admin(bot, update):
         drive.export_users()
         bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!")
 
-
 def export_transactions(bot, update):
     if is_admin(bot, update):
         drive.export_transactions()
         bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!")
-
 
 def export_inventory(bot, update):
     if is_admin(bot, update):
         drive.export_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden vieminen onnistui!")
 
-
 def import_inventory(bot, update):
     if is_admin(bot, update):
         drive.import_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!")
+
+def velo(bot, update):
+    if is_admin(bot, update):
+        velalliset = db.get_velalliset()
+        for i in velalliset:
+            bot.send_photo(i[0], open("velat.jpg", "rb"))
 
 def komennot(bot, update):
     if is_registered(bot, update):
@@ -261,7 +289,7 @@ def komennot(bot, update):
 /osta Osta asioita piikilläsi.
 /hinnasto Tulosta tuotteiden hinnat.
 /saldo Tarkista piikkisi arvo ja lisää ja poista rahaa.
-/poista_edellinen Poista edellinen tapahtuma (ostos tai piikin muuttaminen). Poistaa tapahtuman oikeasti, joten voit toistaa toimenpiteen monta kertaa.
+/poista_edellinen Poista viimeisin tapahtuma.
 /komennot Tää.
 """)
 
@@ -269,19 +297,27 @@ def commands(bot, update):
     if is_admin(bot, update):
         bot.send_message(update.message.chat.id,
         """Komennot:
+Viestittely:
 /help
-/saldo
-/poista_edellinen
-/kuva
 /tapahtumat
 /tanaan
-/store
+/kuva
+
+Käyttäjät:
 /rekisteroidy
+/piikki_ohje
+/saldo
+/poista_edellinen
+/kauppa
+/hinnasto
+
+Admin:
+/velo
 /export_users
 /export_transactions
 /export_inventory
 /import_inventory
-/hinnasto""")
+""")
 
 
 def is_registered(bot, update):
@@ -302,9 +338,9 @@ def is_admin(bot, update):
 poisto_handler = ConversationHandler(
     entry_points = [CommandHandler("poista_edellinen", poistatko, Filters.private)],
     states = {
-        POISTA: [MessageHandler(Filters.text, poista)]
+        POISTA: [RegexHandler('^(Kyllä|Ei)$', poista)]
     },
-    fallbacks = [CommandHandler("lopeta", lopeta), MessageHandler(Filters.all, lopeta)],
+    fallbacks = [CommandHandler("lopeta", lopeta), MessageHandler(Filters.all, tuntematon)],
     allow_reentry = True
 )
 
@@ -316,7 +352,7 @@ saldo_handler = ConversationHandler(
         LISAA: [MessageHandler(Filters.text, lisaa)],
         NOSTA: [MessageHandler(Filters.text, nosta)],
     },
-    fallbacks = [CommandHandler("lopeta", lopeta), MessageHandler(Filters.all, lopeta)],
+    fallbacks = [CommandHandler("lopeta", lopeta), MessageHandler(Filters.all, tuntematon)],
     allow_reentry = True
 
 )

@@ -56,6 +56,13 @@ def get_users():
     conn.close()
     return cur
 
+def get_velalliset():
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("SELECT * from users WHERE saldo < -500").fetchall()
+    conn.close()
+    return cur
+
 def get_balance(id):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
@@ -136,8 +143,6 @@ def print_transactions():
     for row in c.execute("SELECT * FROM transactions"):
         print(row)
     conn.close()
-
-
 
 def create_invetory():
     conn = sqlite3.connect('kiltis.db')
