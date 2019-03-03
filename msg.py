@@ -6,8 +6,28 @@ CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwa
 TO_WHOM = "Kiltistoimareille" #who you are
 confirmation_message = TO_WHOM + " lähetetty: "
 
+GRAPHICAL_MANUAL = "AgADBAADMq8xG9nUAVI_RtZ5vEGqlCdEuhoABBZdb5JVge3pB_gGAAEC" #the address of the graphical manual image
+
 sent_messages = {}
 
+with open("ohje.txt", "r") as f:
+    manual = f.read()
+
+def ohje(bot, update):
+    """Send help"""
+
+    bot.send_message(
+        update.effective_chat.id,
+        manual,
+        parse_mode = "HTML")
+
+def kuva(bot, update):
+    """Send graphical help"""
+
+    if GRAPHICAL_MANUAL:
+        bot.send_photo(update.effective_chat.id, GRAPHICAL_MANUAL)
+    else:
+        bot.send_message(update.effective_chat.id, "Kuvaa ei saatavilla")
 
 def send_to_raati(bot, update):
     """Send an inline message to receiving chat"""

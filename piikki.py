@@ -304,7 +304,7 @@ Viestittely:
 /kuva
 
 Käyttäjät:
-/rekisteroidy
+/kirjaudu
 /piikki_ohje
 /saldo
 /poista_edellinen
@@ -322,8 +322,8 @@ Admin:
 
 def is_registered(bot, update):
     user = update.effective_user
-    if len(db.get_user(user.id)) == 0:
-        bot.send_message(update.message.chat.id, "Rekisteröidy käyttääksesi tätä toiminnallisuutta kirjoittamalla /rekisteroidy.")
+    if len(db.get_user(user.id)) < 1:
+        bot.send_message(update.message.chat.id, "Rekisteröidy käyttääksesi tätä toiminnallisuutta kirjoittamalla /kirjaudu.")
         return False
     else:
         return True
@@ -358,7 +358,7 @@ saldo_handler = ConversationHandler(
 )
 
 register_handler = ConversationHandler(
-    entry_points = [CommandHandler("rekisteroidy", rekisteroidy, Filters.private)],
+    entry_points = [CommandHandler("kirjaudu", rekisteroidy, Filters.private)],
     states = {
         HYVAKSYN: [MessageHandler(Filters.all, hyvaksyn)]
     },

@@ -42,20 +42,12 @@ updater = None
 #CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
 # testi
 BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
-GRAPHICAL_MANUAL = "AgADBAADMq8xG9nUAVI_RtZ5vEGqlCdEuhoABBZdb5JVge3pB_gGAAEC" #the address of the graphical manual image
 
-
-#history to enable replying
-
-#read the manual file
-with open("ohje.txt", "r") as f:
-    manual = f.read()
 
 def start(bot, update):
     """Send a message when the command /start is issued."""
     print(update)
-    update.message.reply_text('Heippa! Kirjoita /help, niin näet, mitä kaikea osaan tehdä!')
-
+    update.message.reply_text('Heippa! Kirjoita /help, niin pääset alkuun.')
 
 
 def error(bot, update, error):
@@ -63,29 +55,31 @@ def error(bot, update, error):
 
     logger.warning('Update "%s" caused error "%s"', update, error)
 
-
 def help(bot, update):
-    """Send help"""
+    bot.update.reply_text("""Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta. 
 
-    bot.send_message(
-        update.effective_chat.id,
-        manual,
-        parse_mode = "HTML")
+Jos haluat lisätietoja kiltistoimikunnan kanssa viestittelystä kirjoita:
+/viesti_ohje
+
+Jos haluat lisätietoja sähköisestä piikistä, kirjoita:
+/piikki_ohje
+""")
+    return
 
 
-def kuva(bot, update):
-    """Send graphical help"""
-
-    if GRAPHICAL_MANUAL:
-        bot.send_photo(update.effective_chat.id, GRAPHICAL_MANUAL)
-    else:
-        bot.send_message(update.effective_chat.id, "Kuvaa ei saatavilla")
-
+def flush_messages(bot):
+   updates = bot.get_updates()
+   while updates:
+     print("Flushing {} messages.".format(len(updates)))
+     time.sleep(1)
+     updates = bot.get_updates(updates[-1]["update_id"] + 1)
 
 def main():
     
     global updater, saldo_sanat
     updater = Updater(token = BOT_TOKEN)
+
+    flush_messages(updater.bot)
 
     dp = updater.dispatcher
 
@@ -96,7 +90,8 @@ def main():
     dp.add_handler(piikki.register_handler)
 
     dp.add_handler(CommandHandler("help",          help, Filters.private))
-    dp.add_handler(CommandHandler("kuva",          kuva, Filters.private))
+    dp.add_handler(CommandHandler("viesti_ohje",   msg.ohje, Filters.private))
+    dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
 
     dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
     dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
