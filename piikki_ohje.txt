@@ -1,4 +1,4 @@
-<b>Sähköinen kiltispiiki</b>
+<b>Sähköinen kiltispiikki</b>
 
 Tämä on kiltiksen sähköinen piikkijärjestelmä. Fyysisesti raha ja herkut liikkuvat kuin aina ennekin, mutta tällä botilla on tarkoitus:
 - poistaa turha sekalaisen paperinipun pläräily
@@ -6,7 +6,7 @@ Tämä on kiltiksen sähköinen piikkijärjestelmä. Fyysisesti raha ja herkut l
 - säästää kiltisvastaavat uusien listojen kirjoittamisen vaivalta
 - kerätä kulutusdataa kiltiksen palveluiden parantamiseksi.
 
-Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @Stippos tai voit ottaa yhteyttä myös suoraan tällä botilla.
+Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @Stippos tai voit ottaa yhteyttä myös suoraan tällä botilla, mistä saat listätietoa kirjoittamalla /viesti_ohje.
 
 Sähköisellä kiltispiikillä voi tällä hetkellä tehdä seuraavia asioita:
 

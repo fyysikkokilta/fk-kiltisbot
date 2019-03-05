@@ -78,18 +78,10 @@ def rekisteroidy(bot, update):
         keyboard = [["Kyllä"], ["Ei"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
 
-        update.message.reply_text("""<b>Käyttöehdot:</b>
+        with open("ehdot.txt", "r") as f:
+            ehdot = f.read()
 
-Tämä on sähköinen kiltispiikki, jonka avulla voit ajaa kiltiksen piikkiä 100% pienemmällä oman niemen etsiskelyllä sekaisin olevasta paperipinkasta ja ilman ikäviä desimaalilukujen päässälaskuja.
-
-Piikin käyttämistä varten sinusta tallennetaan nimesi sekä Telegramin käyttäjätunnuksesi.
-
-Myös tekemäsi ostokset tallennetaan, jotta ne on vahingon sattuessa myös mahdollista peruuttaa kätevästi. Ostoksista kertyvää dataa käytetään myös kiltiksen valikoiman kehittämiseen.
-
-<b>Olethan ystävällinen ja käytät piikkiä vastuullisesti :)</b>
-
-Onko tämä fine?
-""", reply_markup=reply_markup, parse_mode = "HTML")
+        update.message.reply_text(ehdot, reply_markup=reply_markup, parse_mode = "HTML")
 
     return HYVAKSYN
 
@@ -119,11 +111,13 @@ def saldo(bot, update):
         return
 
     global saldo_sanat
-    keyboard = [[saldo_sanat[0]], [saldo_sanat[1]], [saldo_sanat[2]]]
+    keyboard = [[saldo_sanat[1]], [saldo_sanat[2]]]
 
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
 
-    update.message.reply_text('Mitä haluaisit tehdä? Kirjoita missä vaiheessa tahansa /lopeta keskeyttäksesi toiminnon.', reply_markup=reply_markup)
+    saldo = db.get_balance(update.effective_user.id) / 100
+
+    update.message.reply_text('Saldosi on {:.2f}€.\n\nMitä haluaisit tehdä?\n\nKirjoita missä vaiheessa tahansa /lopeta keskeyttäksesi toiminnon.'.format(saldo), reply_markup=reply_markup)
 
     return OHJAA
 
@@ -362,5 +356,5 @@ register_handler = ConversationHandler(
     states = {
         HYVAKSYN: [MessageHandler(Filters.all, hyvaksyn)]
     },
-    fallbacks = [CommandHandler("lopeta", lopeta)]
+    fallbacks = [CommandHandler("lopeta", lopeta),  MessageHandler(Filters.all, tuntematon)]
 )

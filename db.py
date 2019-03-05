@@ -11,7 +11,7 @@ def add_user(id, nick, nimi, saldo):
 def add_transaction(user, name, tuote, aika, hinta):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()
-    c.execute("INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES (NULL,?,?,?,?,?)", (user, name, tuote, hinta, aika))
+    c.execute("INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES (NULL,?,?,?,?,?)", (user, None, tuote, hinta, aika))
     conn.commit()
     conn.close()
 

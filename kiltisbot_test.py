@@ -56,7 +56,7 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
 
 def help(bot, update):
-    bot.update.reply_text("""Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta. 
+    update.message.reply_text("""Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta. 
 
 Jos haluat lisätietoja kiltistoimikunnan kanssa viestittelystä kirjoita:
 /viesti_ohje
