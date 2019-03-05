@@ -57,7 +57,18 @@ def import_inventory():
 def import_users():
     service = build('sheets', 'v4', credentials=creds)
 
-    return
+    sheet = service.spreadsheets()
+    result = sheet.values().get(spreadsheetId=KAYTTAJAT, range="A1:D", majorDimension = "ROWS").execute()
+    values = result.get('values', [])
+    values = list(map(lambda x: [x[0], x[1], x[2], int(x[3])], values))
+
+    users = len(db.get_users())
+    print(values)
+    db.delete_users()
+    for i in values:
+        db.add_user(i[0], i[1], i[2], i[3])
+
+    return len(db.get_users()) - users
 
 def import_transactions():
     service = build('sheets', 'v4', credentials=creds)
@@ -90,7 +101,8 @@ def export_users():
     requests.append({
       "addSheet": {
         "properties": {
-          "title": date
+          "title": date,
+          "index": 0
         }
       }
     })

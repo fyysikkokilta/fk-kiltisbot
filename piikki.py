@@ -269,6 +269,13 @@ def import_inventory(bot, update):
         drive.import_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!")
 
+def import_users(bot, update):
+    if is_admin(bot, update):
+        delta = drive.import_users()
+        message = "Käyttäjiä lisätty {}".format(delta) if delta >= 0 else "Käyttäjiä poistettu {}".format(abs(delta))
+        bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
+
+
 def velo(bot, update):
     if is_admin(bot, update):
         velalliset = db.get_velalliset()

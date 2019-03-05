@@ -40,6 +40,12 @@ def delete_inventory():
     conn.commit()
     conn.close()
 
+def delete_users():
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM users")
+    conn.commit()
+    conn.close()
 
 def get_user(id):
     conn = sqlite3.connect('kiltis.db')
