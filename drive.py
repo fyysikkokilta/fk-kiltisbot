@@ -53,6 +53,7 @@ def import_inventory():
     db.delete_inventory()
     for i in values:
         db.add_item(i[0], i[1], i[2])
+    return len(values)
 
 def import_users():
     service = build('sheets', 'v4', credentials=creds)
@@ -118,6 +119,7 @@ def export_users():
     spreadsheetId=KAYTTAJAT, range= date + "!A1",
     valueInputOption="RAW", body=body).execute()
 
+    return len(users)
 
 def export_transactions():
     service = build('sheets', 'v4', credentials=creds)
@@ -139,6 +141,8 @@ def export_transactions():
     result = service.spreadsheets().values().append(
     spreadsheetId=TAPAHTUMAT, range="A1:A",
     valueInputOption="RAW", body=body).execute()
+
+    return len(trans)
 
 
 def main():

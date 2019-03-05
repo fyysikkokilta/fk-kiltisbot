@@ -13,12 +13,12 @@ bot.
 """
 from uuid import uuid4
 import time
-
+import datetime
 
 from telegram.utils.helpers import escape_markdown
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
-from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler
+from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler, JobQueue
 
 import logging
 
@@ -82,6 +82,10 @@ def main():
     flush_messages(updater.bot)
 
     dp = updater.dispatcher
+
+    jq = updater.job_queue
+
+    jq.run_daily(piikki.backup, time = datetime.time(20,37,0), context = updater.bot, name = "Backup")
 
     dp.add_handler(CommandHandler("start", start))
 

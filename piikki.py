@@ -275,6 +275,13 @@ def import_users(bot, update):
         message = "Käyttäjiä lisätty {}".format(delta) if delta >= 0 else "Käyttäjiä poistettu {}".format(abs(delta))
         bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
 
+def backup(bot, context):
+    users = drive.export_users()
+    transactions = drive.export_transactions()
+    items = drive.export_inventory()
+
+    for i in admin_ids:
+        bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.\n{} ")
 
 def velo(bot, update):
     if is_admin(bot, update):
