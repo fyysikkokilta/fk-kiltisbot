@@ -12,8 +12,6 @@ import datetime
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/calendar.readonly']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-SAMPLE_RANGE_NAME = 'Class Data!A1:C'
 
 TUOTTEET = "1m9mqzS0Vw1qepTOvIJXIJLCzgWwsWZyYz-8iISGD4PY"
 TAPAHTUMAT = "1y-zFM-3GE44BLpv4O6TOfU_o6Mtu9ZwyfGWQhCZ7WoE"

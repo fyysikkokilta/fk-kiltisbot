@@ -251,13 +251,13 @@ def ohje(bot, update):
 
 def export_users(bot, update):
     if is_admin(bot, update):
-        drive.export_users()
-        bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!")
+        users = drive.export_users()
+        bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!\n\n{} käyttäjää yhteensä.".format(users))
 
 def export_transactions(bot, update):
     if is_admin(bot, update):
-        drive.export_transactions()
-        bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!")
+        trans = drive.export_transactions()
+        bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!\n\n{} uutta tapahtumaa.".format(trans))
 
 def export_inventory(bot, update):
     if is_admin(bot, update):
@@ -266,8 +266,8 @@ def export_inventory(bot, update):
 
 def import_inventory(bot, update):
     if is_admin(bot, update):
-        drive.import_inventory()
-        bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!")
+        items = drive.import_inventory()
+        bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!\n\n{} tuotetta yhteensä.".format(items) )
 
 def import_users(bot, update):
     if is_admin(bot, update):
@@ -278,10 +278,9 @@ def import_users(bot, update):
 def backup(bot, context):
     users = drive.export_users()
     transactions = drive.export_transactions()
-    items = drive.export_inventory()
 
     for i in admin_ids:
-        bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.\n{} ")
+        bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
 
 def velo(bot, update):
     if is_admin(bot, update):
@@ -298,7 +297,6 @@ def komennot(bot, update):
 /hinnasto Tulosta tuotteiden hinnat.
 /saldo Tarkista piikkisi arvo ja lisää ja poista rahaa.
 /poista_edellinen Poista viimeisin tapahtuma.
-/komennot Tää.
 """)
 
 def commands(bot, update):
