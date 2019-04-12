@@ -2,7 +2,11 @@
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
 from telegram.ext import InlineQueryHandler, ChosenInlineResultHandler
 
+#test
 CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
+#tuotanto
+#CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
+
 TO_WHOM = "Kiltistoimareille" #who you are
 confirmation_message = TO_WHOM + " lähetetty: "
 

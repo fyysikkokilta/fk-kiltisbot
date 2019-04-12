@@ -98,7 +98,7 @@ def hyvaksyn(bot, update):
         if user.username:
             nick = user.username
 
-        db.add_user(user.id, nick, name, 0)
+        db.add_user(user.id, nick, name, 30)
 
         bot.send_message(update.effective_chat.id, "Onneksi olkoon! Sinut on nyt lisätty käyttäjäksi. Kirjoittamalla /piikki_ohje näet mitä kaikkea sähköisellä piikillä voi tehdä.", reply_markup = ReplyKeyboardRemove())
         return ConversationHandler.END
@@ -278,6 +278,7 @@ def import_users(bot, update):
 def backup(bot, context):
     users = drive.export_users()
     transactions = drive.export_transactions()
+    drive.export_inventory()
 
     for i in admin_ids:
         bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))

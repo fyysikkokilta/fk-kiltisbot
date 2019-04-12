@@ -1,11 +1,17 @@
 
 import quickstart
 import datetime
+import time
+
+events = quickstart.main()
+last_events = time.time()
 
 
 def tapahtumat(bot, update):
-
-    events = quickstart.main()
+    global last_events, events
+    if time.time() - last_events > 600:
+        events = quickstart.main()
+        last_events = time.time()
 
     text = ""
     for x,y in events.items():
@@ -26,8 +32,10 @@ def tanaan_text(bot, update):
         tanaan(bot, update, False)
 
 def tanaan(bot, update, command):
-    
-    events = quickstart.main()
+    global last_events, events
+    if time.time() - last_events > 600:
+        events = quickstart.main()
+        last_events = time.time()
 
     text = "<b>TÄNÄÄN:</b>\n"
 
