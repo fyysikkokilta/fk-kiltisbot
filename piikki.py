@@ -15,6 +15,12 @@ import drive
 
 admin_ids = [51141559]
 
+#test
+CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
+#tuotanto
+#CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
+
+
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
 
@@ -282,6 +288,17 @@ def backup(bot, context):
 
     for i in admin_ids:
         bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
+
+def kulutus(bot, context):
+    eilinen = (datetime.datetime.now() - datetime.timedelta(days = 50)).isoformat()
+    tuotteet = db.get_consumption_after(eilinen)
+    text = "```\nEdellisen päivän kulutus:\n"
+    for i in tuotteet:
+        text += "{:_<18.18}{:2d} kpl\n".format(i[0].strip() + " ", i[1])
+
+    for i in admin_ids:
+        bot.send_message(i, text + "```", parse_mode="MARKDOWN")
+
 
 def velo(bot, update):
     if is_admin(bot, update):

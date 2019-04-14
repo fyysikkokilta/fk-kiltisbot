@@ -111,6 +111,13 @@ def get_transactions_after(id):
     conn.close()
     return cur
 
+def get_consumption_after(time):
+    conn = sqlite3.connect('kiltis.db')
+    c = conn.cursor()
+    cur = c.execute("SELECT tuote, COUNT(tuote) FROM transactions WHERE aika > ? AND NOT tuote='PANO' AND NOT tuote='NOSTO' GROUP BY tuote", (time,)).fetchall()
+    conn.close()
+    return cur
+
 def delete_transaction(id):
     conn = sqlite3.connect('kiltis.db')
     c = conn.cursor()

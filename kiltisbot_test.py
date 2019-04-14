@@ -86,7 +86,8 @@ def main():
     jq = updater.job_queue
 
     jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
-
+    jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
+    
     dp.add_handler(CommandHandler("start", start))
 
     dp.add_handler(piikki.saldo_handler)

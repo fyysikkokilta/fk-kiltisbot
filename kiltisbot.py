@@ -38,10 +38,10 @@ logger = logging.getLogger(__name__)
 
 updater = None
 #tuotanto
-#BOT_TOKEN = "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE"
+BOT_TOKEN = "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE"
 #CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
 # testi
-BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
+#BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
 
 
 def start(bot, update):
@@ -86,7 +86,8 @@ def main():
     jq = updater.job_queue
 
     jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
-
+    jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
+    
     dp.add_handler(CommandHandler("start", start))
 
     dp.add_handler(piikki.saldo_handler)
