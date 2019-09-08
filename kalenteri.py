@@ -15,14 +15,14 @@ def tapahtumat(bot, update):
 
     text = ""
     for x,y in events.items():
-        text = text + "\n<b>" + x + "</b>\n"
+        text = text + "\n*" + x + "*\n"
         for i in y:
             if len(i) == 1:
                 text = text + i[0] + "\n"
             else:
-                text = text + "{} <a href=\"{}\">{}</a>\n".format(".".join(i[0].split("-")[::-1]), i[2], i[1])
-
-    bot.send_message(update.effective_chat.id, text, parse_mode = "HTML")
+                text = text + "{} [{}]({})\n".format(".".join(i[0].split("-")[::-1]), i[1], i[2])
+                #text += "{} {}\n".format(".".join(i[0].split("-")[::-1]), i[1])
+    bot.send_message(update.effective_chat.id, text, parse_mode = "MARKDOWN")
 
 def tanaan_command(bot, update):
     tanaan(bot, update, True)
