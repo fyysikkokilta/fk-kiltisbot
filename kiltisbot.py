@@ -24,10 +24,18 @@ from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInli
 import logging
 
 import settings
-import db
-import piikki
-import kalenteri
-import msg
+
+settings.init_settings()
+
+if settings.settings["store"]:
+    import db
+    import piikki
+
+if settings.settings["calendar"]:
+    import kalenteri
+
+if settings.secrets["messaging"]:
+    import msg
 
 env = None
 
@@ -36,8 +44,7 @@ if len(sys.argv) == 1:
 else:
     env = sys.argv[1]
 
-settings.init(env)
-
+settings.init_secrets(env)
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN= range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
@@ -94,9 +101,6 @@ def main():
 
     jq = updater.job_queue
 
-    jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
-
-    
     dp.add_handler(CommandHandler("start", start))
 
     dp.add_handler(CommandHandler("help",          help, Filters.private))
@@ -104,6 +108,8 @@ def main():
     dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
     
     if settings.settings["store"]:
+
+        jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
 
         dp.add_handler(piikki.saldo_handler)
         dp.add_handler(piikki.poisto_handler)

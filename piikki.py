@@ -11,15 +11,12 @@ from telegram.ext import (Updater, InlineQueryHandler, CommandHandler, ChosenInl
 import datetime
 import db
 import math
-import drive
+import settings
 
-admin_ids = [51141559]
+if settings.settings["drive_backend"]:
+    import drive
 
-#test
-#CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
-#tuotanto
-CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
-
+admin_ids = settings.settings["admins"]
 
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
@@ -296,7 +293,7 @@ def kulutus(bot, context):
     for i in tuotteet:
         text += "{:_<18.18}{:2d} kpl\n".format(i[0].strip() + " ", i[1])
 
-    bot.send_message(CHAT_ID, text + "```", parse_mode="MARKDOWN")
+    bot.send_message(settings.secrets["chat_id"], text + "```", parse_mode="MARKDOWN")
 
 
 def velo(bot, update):

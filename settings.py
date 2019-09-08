@@ -9,7 +9,16 @@ import sqlite3
 from os.path import isfile
 
 
-def init(env):
+def init_settings():
+
+    with open("config.json") as f:
+        config = json.load(f)
+
+    global settings
+    settings = config["SETTINGS"]
+
+
+def init_secrets(env):
 
     assert env in ["TEST", "PROD"], "The environment can be either TEST or PROD"
 
