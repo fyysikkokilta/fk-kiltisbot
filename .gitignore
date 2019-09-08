@@ -1,0 +1,5 @@
+*.pyc
+credentials.json
+creds.json
+*.db
+*.pickle
