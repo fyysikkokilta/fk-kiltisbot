@@ -7,15 +7,10 @@ from google.auth.transport.requests import Request
 
 import db
 import datetime
+import settings
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/calendar.readonly']
-
-# The ID and range of a sample spreadsheet.
-
-TUOTTEET = "1m9mqzS0Vw1qepTOvIJXIJLCzgWwsWZyYz-8iISGD4PY"
-TAPAHTUMAT = "1y-zFM-3GE44BLpv4O6TOfU_o6Mtu9ZwyfGWQhCZ7WoE"
-KAYTTAJAT = "1DYq5i7HDH4_5WkjF92pwEA8fb-woAY5wh5bCwMUIp8w"
 
 creds = None
 
@@ -43,7 +38,7 @@ def import_inventory():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=TUOTTEET, range="A1:3", majorDimension = "COLUMNS").execute()
+    result = sheet.values().get(spreadsheetId=settings.secrets["tuotteet_sheet"], range="A1:3", majorDimension = "COLUMNS").execute()
     values = result.get('values', [])
     values = list(map(lambda x: [x[0], int(x[1]), int(x[2])], values[1:]))
 
@@ -57,7 +52,7 @@ def import_users():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=KAYTTAJAT, range="A1:D", majorDimension = "ROWS").execute()
+    result = sheet.values().get(spreadsheetId=settings.secrets["kayttajat_sheet"], range="A1:D", majorDimension = "ROWS").execute()
     values = result.get('values', [])
     values = list(map(lambda x: [x[0], x[1], x[2], int(x[3])], values))
 
@@ -85,7 +80,7 @@ def export_inventory():
     body = {"values": values}
 
     result = service.spreadsheets().values().append(
-    spreadsheetId=TUOTTEET, range="A1:A",
+    spreadsheetId=settings.secrets["tuotteet_sheet"], range="A1:A",
     valueInputOption="RAW", body=body).execute()
 
 
@@ -110,11 +105,11 @@ def export_users():
     body = {"values": users}
 
     response = service.spreadsheets().batchUpdate(
-    spreadsheetId=KAYTTAJAT,
+    spreadsheetId=settings.secrets["kayttajat_sheet"],
     body=add_body).execute()
 
     result = service.spreadsheets().values().append(
-    spreadsheetId=KAYTTAJAT, range= date + "!A1",
+    spreadsheetId=settings.secrets["kayttajat_sheet"], range= date + "!A1",
     valueInputOption="RAW", body=body).execute()
 
     return len(users)
@@ -123,7 +118,7 @@ def export_transactions():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=TAPAHTUMAT, range="A1:A").execute()
+    result = sheet.values().get(spreadsheetId=settings.secrets["tapahtumat_sheet"], range="A1:A").execute()
     values = result.get('values', [])
 
     end = 0
@@ -137,7 +132,7 @@ def export_transactions():
     body = {"values": mapped}
 
     result = service.spreadsheets().values().append(
-    spreadsheetId=TAPAHTUMAT, range="A1:A",
+    spreadsheetId=settings.secrets["tapahtumat_sheet"], range="A1:A",
     valueInputOption="RAW", body=body).execute()
 
     return len(trans)

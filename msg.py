@@ -2,10 +2,7 @@
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
 from telegram.ext import InlineQueryHandler, ChosenInlineResultHandler
 
-#test
-#CHAT_ID = -393042631 #the id of the chat where you want the messages to be forwarded
-#tuotanto
-CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
+import settings
 
 TO_WHOM = "Kiltistoimareille" #who you are
 confirmation_message = TO_WHOM + " lähetetty: "
@@ -47,7 +44,7 @@ def send_to_raati(bot, update):
                 user_str = '<b>{} (</b>@{}<b>)</b>'.format(user_str, from_user.username)
     message = '{}\n{}'.format(user_str, u.query)
     bot.send_message(
-        CHAT_ID,
+        settings.secrets["chat_id"],
         message,
         parse_mode='HTML'
     )
@@ -60,12 +57,8 @@ def inlinequery(bot, update):
     results = [
         InlineQueryResultArticle(
             id='normal',
-            title="Lähetä " + TO_WHOM,
-            input_message_content=InputTextMessageContent(confirmation_message + query)),
-        InlineQueryResultArticle(
-            id='anonymous',
-            title="Lähetä {} anonyyminä".format(TO_WHOM),
-            input_message_content=InputTextMessageContent(confirmation_message + query)),
+            title="Ominaisuus poistettu.",
+            input_message_content=InputTextMessageContent("Ominaisuus poistettu käytöstä vähän käytettynä ja koska näihin viesteihin ei voi vastata. Lähetä viestiä suoraan @FK_Kiltisbot, sekin on anonyymiä."))
     ]
     update.inline_query.answer(results)
 
@@ -113,7 +106,7 @@ def send_from_private(bot, update):
     """Forward a private message sent for the bot to the receiving chat anonumously"""
 
     msg = update.effective_message
-    sent_message = robust_send_message(bot, msg, CHAT_ID, None)
+    sent_message = robust_send_message(bot, msg, settings.secrets["chat_id"], None)
     sent_messages[sent_message.message_id] = (msg.chat.id, msg.message_id)
 
 

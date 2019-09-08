@@ -14,6 +14,7 @@ bot.
 from uuid import uuid4
 import time
 import datetime
+import sys
 
 from telegram.utils.helpers import escape_markdown
 
@@ -22,10 +23,21 @@ from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInli
 
 import logging
 
+import settings
 import db
 import piikki
 import kalenteri
 import msg
+
+env = None
+
+if len(sys.argv) == 1:
+    env = "PROD"
+else:
+    env = sys.argv[1]
+
+settings.init(env)
+
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN= range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
@@ -37,11 +49,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 updater = None
-#tuotanto
-BOT_TOKEN = "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE"
-#CHAT_ID = -386083933 #the id of the chat where you want the messages to be forwarded
-# testi
-#BOT_TOKEN = "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric"
+
+BOT_TOKEN = settings.secrets["bot_token"]
 
 
 def start(bot, update):
@@ -85,45 +94,53 @@ def main():
 
     jq = updater.job_queue
 
-    jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
     jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
+
     
     dp.add_handler(CommandHandler("start", start))
-
-    dp.add_handler(piikki.saldo_handler)
-    dp.add_handler(piikki.poisto_handler)
-    dp.add_handler(piikki.register_handler)
 
     dp.add_handler(CommandHandler("help",          help, Filters.private))
     dp.add_handler(CommandHandler("viesti_ohje",   msg.ohje, Filters.private))
     dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
-
-    dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
-    dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
     
-    dp.add_handler(CommandHandler("kauppa",        piikki.store, Filters.private))
-    dp.add_handler(CommandHandler("kirjaudu",      piikki.rekisteroidy, Filters.private))
-    dp.add_handler(CommandHandler("commands",      piikki.commands, Filters.private))
-    dp.add_handler(CommandHandler("hinnasto",      piikki.hinnasto, Filters.private))
-    dp.add_handler(CommandHandler("komennot",      piikki.komennot, Filters.private))
-    dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
-    dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
+    if settings.settings["store"]:
+
+        dp.add_handler(piikki.saldo_handler)
+        dp.add_handler(piikki.poisto_handler)
+        dp.add_handler(piikki.register_handler)
+
+        dp.add_handler(CommandHandler("kauppa",        piikki.store, Filters.private))
+        dp.add_handler(CommandHandler("kirjaudu",      piikki.rekisteroidy, Filters.private))
+        dp.add_handler(CommandHandler("commands",      piikki.commands, Filters.private))
+        dp.add_handler(CommandHandler("hinnasto",      piikki.hinnasto, Filters.private))
+        dp.add_handler(CommandHandler("komennot",      piikki.komennot, Filters.private))
+        dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
+        dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
+
+        dp.add_handler(CommandHandler("velo",                piikki.velo, Filters.private))
+
+        dp.add_handler(CallbackQueryHandler(piikki.button))
+        
+    if settings.settings["drive_backend"]:
+        
+        jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
+        dp.add_handler(CommandHandler("export_users",        piikki.export_users, Filters.private))
+        dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
+        dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
+        dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
+        dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
+        
+    if settings.settings["messaging"]:
+        dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
+        dp.add_handler(MessageHandler(Filters.reply, msg.reply))
     
-    dp.add_handler(CommandHandler("export_users",        piikki.export_users, Filters.private))
-    dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
-    dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
-    dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
-    dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
-    dp.add_handler(CommandHandler("velo",                piikki.velo, Filters.private))
+        dp.add_handler(InlineQueryHandler(msg.inlinequery))
+        dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
 
-    dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
-    dp.add_handler(MessageHandler(Filters.reply, msg.reply))
-    dp.add_handler(MessageHandler(Filters.text, kalenteri.tanaan_text))
-
-    dp.add_handler(CallbackQueryHandler(piikki.button))
-
-    dp.add_handler(InlineQueryHandler(msg.inlinequery))
-    dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
+    if settings.settings["calendar"]:
+        dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
+        dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
+        dp.add_handler(MessageHandler(Filters.text, kalenteri.tanaan_text))
 
     dp.add_error_handler(error)
 
