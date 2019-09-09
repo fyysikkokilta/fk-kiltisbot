@@ -3,3 +3,7 @@ credentials.json
 creds.json
 *.pickle
 .vscode
+__pycache__
+.ipynb_checkpoints
+*.ipynb
+*.db
