@@ -34,7 +34,7 @@ if settings.settings["store"]:
 if settings.settings["calendar"]:
     import kalenteri
 
-if settings.secrets["messaging"]:
+if settings.settings["messaging"]:
     import msg
 
 env = None

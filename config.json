@@ -3,7 +3,8 @@
 		"messaging": true,
 		"store": true,
 		"drive_backend": true,
-		"calendar": true
+		"calendar": true,
+		"admins": [51141559]
 	},
 	"TEST": {
 		"bot_token": "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric",
