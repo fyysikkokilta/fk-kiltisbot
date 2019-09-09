@@ -1,3 +1,5 @@
+"""Wrapper for sqlite3 library for this application. Pretty stupid code, but it is the way it is and it works."""
+
 import sqlite3
 
 import settings

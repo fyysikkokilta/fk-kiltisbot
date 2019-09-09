@@ -1,5 +1,5 @@
 """
-Initialises variables for the bot
+Used to initialize variables such as bot tokens and settings so that they can be used across all the project files.
 """
 
 import json
@@ -35,13 +35,16 @@ def init_secrets(env):
     """You must specify a chat id for the chat where the messages will be forwarded
     if you want to use the messging feature."""
 
-    assert not settings["drive_backend"] or (secrets["tuotteet_sheet"] 
-    and secrets["kayttajat_sheet"] and secrets["tapahtumat_sheet"]), \
-    """You must specify the Google drive sheets used for the backend if 
-    you want to use that feature
-    """
+    assert not (settings["drive_backend"] and not secrets["tuotteet_sheet"]),\
+    """Must have tuotteet sheet defined if you want to use Drive backend"""
 
-    assert (settings["calendar"] or settings["drive_backend"]) and isfile("credentials.json")
+    assert not (settings["drive_backend"] and not secrets["kayttajat_sheet"]),\
+    """Must have kayttajat sheet defined if you want to use Drive backend"""
+
+    assert not (settings["drive_backend"] and not secrets["tapahtumat_sheet"]),\
+    """Must have tapahtumat sheet defined if you want to use Drive backend"""
+
+    assert not ((settings["calendar"] or settings["drive_backend"]) and not isfile("credentials.json")),\
     """You need the credentials file in this directory from 
     https://developers.google.com/sheets/api/quickstart/python
     to use the Google API features.

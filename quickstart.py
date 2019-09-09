@@ -1,3 +1,8 @@
+"""
+This script fetches events from Guild of Physics calendars using Google's Calendar API
+and returns them in a list. 
+"""
+
 from __future__ import print_function
 import datetime
 import pickle

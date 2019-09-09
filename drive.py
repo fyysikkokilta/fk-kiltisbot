@@ -1,3 +1,5 @@
+"""This file implements all the Google Sheets backend features for the tab."""
+
 from __future__ import print_function
 import pickle
 import os.path

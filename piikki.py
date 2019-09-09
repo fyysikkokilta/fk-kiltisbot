@@ -1,3 +1,5 @@
+"""Contains all the functions to use the tab functionality of Kiltisbot.
+"""
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
@@ -22,6 +24,8 @@ with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
 
 def store(bot, update):
+    """Handles the "kauppa" commad for the bot. Prints the products as buttons that can be used to buy products."""
+
     if not is_registered(bot, update):
         return
 
@@ -48,6 +52,8 @@ def store(bot, update):
     update.message.reply_text('Mitä laitetaan?', reply_markup=reply_markup)
 
 def button(bot, update):
+    """Callback funtion for the inline keyboard buttons that handles what happens when user chooses an option in the store."""
+
     if not is_registered(bot, update):
         return
 
@@ -72,6 +78,8 @@ def button(bot, update):
     query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100))
 
 def rekisteroidy(bot, update):
+    """Handles the conversations when registering new customers."""
+
     user = update.effective_user.id
     if len(db.get_user(user)) > 0:
         bot.send_message(update.effective_chat.id, "Olet jo käyttäjä.")
@@ -89,6 +97,8 @@ def rekisteroidy(bot, update):
     return HYVAKSYN
 
 def hyvaksyn(bot, update):
+    """Conversation handler for when the user accepts terms and conditions."""
+
     user = update.effective_user
     if update.message.text == "Kyllä":
         name = ""
@@ -110,6 +120,8 @@ def hyvaksyn(bot, update):
         return ConversationHandler.END
 
 def saldo(bot, update):
+    """Conversations handler for when the user wishes to alter their saldo."""
+
     if not is_registered(bot, update):
         return
 
@@ -125,6 +137,8 @@ def saldo(bot, update):
     return OHJAA
 
 def ohjaa(bot, update):
+    """"Conversation handler for when the user wants to top up or withdraw from their account."""
+
     global saldo_sanat
     print(update.effective_message.text)
     if update.effective_message.text == saldo_sanat[0]:
@@ -143,6 +157,7 @@ def ohjaa(bot, update):
         return ConversationHandler.END
 
 def lisaa(bot, update):
+    """Add money to account."""
     maara = 0
     try:
         maara = int(float(update.message.text.replace(",", ".")) * 100)
@@ -166,6 +181,8 @@ def lisaa(bot, update):
     return ConversationHandler.END
 
 def nosta(bot, update):
+    """Withdraw money from account."""
+
     maara = 0
     try:
         maara = int(float(update.message.text.replace(",", ".")) * 100)
@@ -188,6 +205,8 @@ def nosta(bot, update):
     return ConversationHandler.END
 
 def lopeta(bot, update):
+    """Handles ending a conversations handler conversations using command /lopeta."""
+
     update.message.reply_text('Toiminto keskeytetty.', reply_markup = ReplyKeyboardRemove())
     return ConversationHandler.END
 
@@ -199,6 +218,8 @@ def tuntematon(bot, update):
     return ConversationHandler.END
 
 def poistatko(bot, update):
+    """Handles removing the last action made by the user."""
+
     if not is_registered(bot, update):
         return
 
@@ -217,6 +238,7 @@ def poistatko(bot, update):
     return POISTA
 
 def poista(bot, update):
+    """Does the actual removing when user wants to remove their last action."""
     if update.message.text == "Kyllä":
         user = update.effective_user.id
         edellinen = db.get_last_transaction(update.effective_user.id)
@@ -241,6 +263,8 @@ def poista(bot, update):
     return ConversationHandler.END
 
 def hinnasto(bot, update):
+    """Prints items in stock and their prices."""
+
     items = db.get_items()
     text = "```\nHinnasto:\n"
     for i in items:
@@ -249,36 +273,50 @@ def hinnasto(bot, update):
 
 
 def ohje(bot, update):
+    """Prints the manual for using the store."""
+
     global ohje_teksti
     bot.send_message(update.effective_user.id, ohje_teksti, parse_mode = "HTML")
 
 def export_users(bot, update):
+    """Export users to Google sheets."""
+
     if is_admin(bot, update):
         users = drive.export_users()
         bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!\n\n{} käyttäjää yhteensä.".format(users))
 
 def export_transactions(bot, update):
+    """Export sales events to Google sheets."""
+
     if is_admin(bot, update):
         trans = drive.export_transactions()
         bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!\n\n{} uutta tapahtumaa.".format(trans))
 
 def export_inventory(bot, update):
+    """Exports current inventory to google sheets."""
     if is_admin(bot, update):
         drive.export_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden vieminen onnistui!")
 
 def import_inventory(bot, update):
+    """Import inventory from Google sheets."""
+
     if is_admin(bot, update):
         items = drive.import_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!\n\n{} tuotetta yhteensä.".format(items) )
 
 def import_users(bot, update):
+    """Import users from Google sheets. BE CAREFUL WHEN USING THIS. If you have changes in users saldo that are not in 
+    Google drive but are in the local database, they will be overwritten."""
+
     if is_admin(bot, update):
         delta = drive.import_users()
         message = "Käyttäjiä lisätty {}".format(delta) if delta >= 0 else "Käyttäjiä poistettu {}".format(abs(delta))
         bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
 
 def backup(bot, context):
+    """Backs up all the things to Google sheets."""
+
     users = drive.export_users()
     transactions = drive.export_transactions()
     drive.export_inventory()
@@ -287,6 +325,8 @@ def backup(bot, context):
         bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
 
 def kulutus(bot, context):
+    """Prints the daily tab events to the group chat."""
+
     eilinen = (datetime.datetime.now() - datetime.timedelta(days = 1)).isoformat()
     tuotteet = db.get_consumption_after(eilinen)
     text = "```\nEdellisen päivän kulutus:\n"
@@ -297,12 +337,15 @@ def kulutus(bot, context):
 
 
 def velo(bot, update):
+    """Encourages people who are more than 5€ negative in their tab to pay their debts."""
+
     if is_admin(bot, update):
         velalliset = db.get_velalliset()
         for i in velalliset:
             bot.send_photo(i[0], open("velat.jpg", "rb"))
 
 def komennot(bot, update):
+    """Lists the commands usable by the regular user."""
     if is_registered(bot, update):
         bot.send_message(update.message.chat.id,
         """Komennot:
@@ -314,6 +357,7 @@ def komennot(bot, update):
 """)
 
 def commands(bot, update):
+    """Lists the commands usable by an admin."""
     if is_admin(bot, update):
         bot.send_message(update.message.chat.id,
         """Komennot:
@@ -341,6 +385,7 @@ Admin:
 
 
 def is_registered(bot, update):
+    """Check if user is registered."""
     user = update.effective_user
     if len(db.get_user(user.id)) < 1:
         bot.send_message(update.message.chat.id, "Rekisteröidy käyttääksesi tätä toiminnallisuutta kirjoittamalla /kirjaudu.")
@@ -349,12 +394,15 @@ def is_registered(bot, update):
         return True
 
 def is_admin(bot, update):
+    """Check if user is admin."""
+
     if update.effective_user.id in admin_ids:
         return True
     else:
         bot.send_message(update.message.chat.id, "You are not authorized.")
         return False
 
+#ConversationHandler function that handles the conversation for deleting previous action.
 poisto_handler = ConversationHandler(
     entry_points = [CommandHandler("poista_edellinen", poistatko, Filters.private)],
     states = {
@@ -364,6 +412,7 @@ poisto_handler = ConversationHandler(
     allow_reentry = True
 )
 
+#ConversationHandler function that handles the conversation for topping up or withdrawing money from account.
 saldo_handler = ConversationHandler(
     entry_points = [CommandHandler("saldo", saldo, Filters.private)],
     states = {
@@ -377,6 +426,7 @@ saldo_handler = ConversationHandler(
 
 )
 
+#Conversation handler function that handles the conversation for registering as an user.
 register_handler = ConversationHandler(
     entry_points = [CommandHandler("kirjaudu", rekisteroidy, Filters.private)],
     states = {

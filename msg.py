@@ -1,3 +1,7 @@
+"""
+A file that contains all the messaging functionalities of Kiltisbot.
+"""
+
 
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
 from telegram.ext import InlineQueryHandler, ChosenInlineResultHandler
@@ -31,7 +35,8 @@ def kuva(bot, update):
         bot.send_message(update.effective_chat.id, "Kuvaa ei saatavilla")
 
 def send_to_raati(bot, update):
-    """Send an inline message to receiving chat"""
+    """Send an inline message to receiving chat. Removed in this version as obsolete but kept so that people will not be confused.
+    """
 
     u = update.chosen_inline_result
     result_id = u.result_id
@@ -51,7 +56,7 @@ def send_to_raati(bot, update):
 
 
 def inlinequery(bot, update):
-    """Handle the inline query."""
+    """Handle the inline query. Also removed."""
 
     query = update.inline_query.query
     results = [

@@ -1,3 +1,4 @@
+"""This file handles getting the events from the Guild of Physics Google calendar and using the bot to send the to the user."""
 
 import quickstart
 import datetime

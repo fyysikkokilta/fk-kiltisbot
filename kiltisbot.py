@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Simple Bot to reply to Telegram messages.
-This program is dedicated to the public domain under the CC0 license.
-This Bot uses the Updater class to handle the bot.
-First, a few handler functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-Usage:
-Basic inline bot example. Applies different text transformations.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
+"""A file that runs all the feature of Kiltisbot. 
+Run this file with python kiltisbot.py to start the bot 
+but be sure to update the "cofig.json" file with your bot tokens etc. first. 
 """
+
 from uuid import uuid4
 import time
 import datetime
@@ -84,11 +78,13 @@ Jos haluat lisätietoja sähköisestä piikistä, kirjoita:
 
 
 def flush_messages(bot):
-   updates = bot.get_updates()
-   while updates:
-     print("Flushing {} messages.".format(len(updates)))
-     time.sleep(1)
-     updates = bot.get_updates(updates[-1]["update_id"] + 1)
+    """Flushes the messages send to the bot during downtime so that the bot does not start spamming when it gets online again."""
+
+    updates = bot.get_updates()
+    while updates:
+        print("Flushing {} messages.".format(len(updates)))
+        time.sleep(1)
+        updates = bot.get_updates(updates[-1]["update_id"] + 1)
 
 def main():
     
@@ -108,6 +104,7 @@ def main():
     dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
     
     if settings.settings["store"]:
+        #handlers related to the store feature
 
         jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
 
@@ -128,7 +125,8 @@ def main():
         dp.add_handler(CallbackQueryHandler(piikki.button))
         
     if settings.settings["drive_backend"]:
-        
+        #handlers for the drive backend
+
         jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
         dp.add_handler(CommandHandler("export_users",        piikki.export_users, Filters.private))
         dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
@@ -137,6 +135,8 @@ def main():
         dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
         
     if settings.settings["messaging"]:
+        #handlers for the messaging functionality
+
         dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
         dp.add_handler(MessageHandler(Filters.reply, msg.reply))
     
@@ -144,6 +144,8 @@ def main():
         dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
 
     if settings.settings["calendar"]:
+        #handlers for the calendar feature
+
         dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
         dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
         dp.add_handler(MessageHandler(Filters.text, kalenteri.tanaan_text))
