@@ -133,7 +133,13 @@ def main():
         dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
         dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
         dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
-        
+
+    if settings.settings["calendar"]:
+        #handlers for the calendar feature
+
+        dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
+        dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
+
     if settings.settings["messaging"]:
         #handlers for the messaging functionality
 
@@ -144,11 +150,10 @@ def main():
         dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
 
     if settings.settings["calendar"]:
-        #handlers for the calendar feature
+        #handler tanaan feature
 
-        dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
-        dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
         dp.add_handler(MessageHandler(Filters.text, kalenteri.tanaan_text))
+
 
     dp.add_error_handler(error)
 
