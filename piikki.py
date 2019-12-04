@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """Contains all the functions to use the tab functionality of Kiltisbot.
 """
 
