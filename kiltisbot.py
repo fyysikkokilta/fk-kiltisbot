@@ -136,7 +136,8 @@ def main():
         dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
         dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
         dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
-        #dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
+        dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
+        dp.add_handler(CommandHandler("import_transactions", piikki.import_transactions, Filters.private))
 
     if settings.settings["calendar"]:
         #handlers for the calendar feature

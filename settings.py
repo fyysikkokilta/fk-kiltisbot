@@ -57,8 +57,6 @@ def init_secrets(env):
         print("No such database file as {}. Creating new database {}".format(secrets["database"], database))
         secrets["database"] = database
 
-        config[env]["database"] = database
-
         conn = sqlite3.connect(database)
         c = conn.cursor()
         c.execute("CREATE TABLE inventory (nimi text, hinta int, maara int)")

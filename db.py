@@ -51,6 +51,13 @@ def delete_users():
     conn.commit()
     conn.close()
 
+def delete_transactions():
+    conn = sqlite3.connect(settings.secrets["database"])
+    c = conn.cursor()
+    c.execute("DELETE FROM transactions")
+    conn.commit()
+    conn.close()
+
 def get_user(id):
     conn = sqlite3.connect(settings.secrets["database"])
     c = conn.cursor()

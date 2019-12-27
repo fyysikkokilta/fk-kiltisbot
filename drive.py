@@ -60,6 +60,9 @@ def import_users():
 
     users = len(db.get_users())
     print(values)
+
+    export_users() #safety export to not lose data
+
     db.delete_users()
     for i in values:
         db.add_user(i[0], i[1], i[2], i[3])
@@ -69,7 +72,18 @@ def import_users():
 def import_transactions():
     service = build('sheets', 'v4', credentials=creds)
 
-    return
+    sheet = service.spreadsheets()
+    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:F").execute()["values"]
+    print(result)
+    values = list(map(lambda x: (int(x[1]), x[3], x[5], int(x[4])), result))
+    #values = list(map(lambda x: (x[1], x[3], x[5], x[4]), result))
+
+    db.delete_transactions()
+
+    for i in values:
+        db.add_transaction(i[0], None, i[1], i[2], i[3])
+
+    return len(values)
 
 def export_inventory():
     service = build('sheets', 'v4', credentials=creds)
@@ -82,8 +96,8 @@ def export_inventory():
     body = {"values": values}
 
     result = service.spreadsheets().values().append(
-    spreadsheetId=settings.secrets.sheets["sheets"]["tuotteet"], range="A1:A",
-    valueInputOption="RAW", body=body).execute()
+        spreadsheetId=settings.secrets["sheets"]["tuotteet"], range="A1:A",
+        valueInputOption="RAW", body=body).execute()
 
 
 def export_users():

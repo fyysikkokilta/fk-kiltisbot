@@ -30,7 +30,7 @@ def store(bot, update):
         return
 
     products = db.get_items()
-    print(products)
+    #print(products)
 
     y = 2
     x = math.ceil(len(products) / y)
@@ -67,13 +67,13 @@ def button(bot, update):
     time = datetime.datetime.today().isoformat()
     price = db.get_price(query.data)
     name = db.get_user(user)[0][2]
-    print(price)
+    #print(price)
 
     db.add_transaction(user, name, query.data, time, price)
     db.update_balance(user, -price)
 
     saldo = db.get_balance(user)
-    print(saldo)
+    #print(saldo)
     query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100))
 
 def rekisteroidy(bot, update):
@@ -247,7 +247,7 @@ def poista(bot, update):
 
         if edellinen[3] != "PANO" and edellinen[3] != "NOSTO":
             try:
-                db.update_stock(edellinen[3], 1)
+                db.update_stock(edellinen[3], 0)
             except TypeError:
                 pass
 
@@ -305,13 +305,24 @@ def import_inventory(bot, update):
         bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!\n\n{} tuotetta yhteensä.".format(items) )
 
 def import_users(bot, update):
-    """Import users from Google sheets. BE CAREFUL WHEN USING THIS. If you have changes in users saldo that are not in 
-    Google drive but are in the local database, they will be overwritten."""
+    """Import users from Google Sheets. BE CAREFUL WHEN USING THIS. THIS WILL OWERWIRTE YOUR DATABASE!"""
 
     if is_admin(bot, update):
         delta = drive.import_users()
         message = "Käyttäjiä lisätty {}".format(delta) if delta >= 0 else "Käyttäjiä poistettu {}".format(abs(delta))
         bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
+
+def import_transactions(bot, update):
+    """Import transactions from Google Sheets. BE CAREFUL WHEN USING THIS. THIS WILL OWERWRITE YOUR DATABASE!"""
+
+    #safety export of transactions
+    export_transactions(bot, update)
+
+    if is_admin(bot, update):
+        delta = drive.import_transactions()
+        message = "Tapahtumia tuotu {}".format(delta)
+        bot.send_message(update.message.chat.id, "Tapahtumien tuominen onnistui! \n\n" + message)
+
 
 def backup(bot, context):
     """Backs up all the things to Google sheets."""
