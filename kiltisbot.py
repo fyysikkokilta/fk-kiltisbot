@@ -86,6 +86,10 @@ def flush_messages(bot):
         time.sleep(1)
         updates = bot.get_updates(updates[-1]["update_id"] + 1)
 
+def whoami(bot, update):
+    id = update.effective_message.chat.id
+    bot.send_message(id, "Tämän chätin ID on {}".format(id))
+
 def main():
     
     global updater, saldo_sanat
@@ -97,8 +101,9 @@ def main():
 
     jq = updater.job_queue
 
-    dp.add_handler(CommandHandler("start", start))
-
+    dp.add_handler(CommandHandler("start",         start))
+    dp.add_handler(CommandHandler("whoami",        whoami))
+    
     dp.add_handler(CommandHandler("help",          help, Filters.private))
     dp.add_handler(CommandHandler("viesti_ohje",   msg.ohje, Filters.private))
     dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
@@ -148,7 +153,7 @@ def main():
     
         dp.add_handler(InlineQueryHandler(msg.inlinequery))
         dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
-
+        
     if settings.settings["calendar"]:
         #handler tanaan feature
 

@@ -90,7 +90,7 @@ def get_price(nimi):
 def get_items():
     conn = sqlite3.connect(settings.secrets["database"])
     c = conn.cursor()
-    cur = c.execute("SELECT * FROM inventory").fetchall()
+    cur = c.execute("SELECT * FROM inventory WHERE maara > 0").fetchall()
     conn.close()
     return cur
 
@@ -134,6 +134,13 @@ def update_stock(nimi, delta):
     c = conn.cursor()
     cur = c.execute("SELECT maara FROM inventory WHERE nimi=?", (nimi,)).fetchone()[0]
     c.execute("UPDATE inventory SET maara = ? WHERE nimi = ?", (cur + delta, nimi))
+    conn.commit()
+    conn.close()
+
+def set_stock_0(nimi):
+    conn = sqlite3.connect(settings.secrets["database"])
+    c = conn.cursor()
+    c.execute("UPDATE inventory SET maara = ? WHERE nimi = ?", (0, nimi))
     conn.commit()
     conn.close()
 

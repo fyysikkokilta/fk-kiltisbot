@@ -4,22 +4,6 @@
 		"store": true,
 		"drive_backend": true,
 		"calendar": true,
-		"admins": [51141559]
-	},
-	"TEST": {
-		"bot_token": "795847607:AAFVVYCqMnULe22gDNlQjPVMzCcxibKWric",
-		"chat_id": -393042631,
-		"database": "TEST_default.db",
-		"tuotteet_sheet": "1b_F2DGilrzGjarqEbsFE5_RW-lrIuBm-MRFDxFo5FrA",
-		"tapahtumat_sheet": "19Vce226X9xDl6jmXsAMhBuai5My_JskOagRHtMjRaxk",
-		"kayttajat_sheet": "1loeQ1UV_B8luNCQjN7N-sxPrnCVEj13MfGBpXIfDJ7Q"
-	},
-	"PROD": {
-		"bot_token": "647159337:AAFmV4Rf5tJ5nTdWHUEa1qFH1yxzK10r4PE",
-		"chat_id": -386083933,
-		"database": "kiltis.db",
-		"tuotteet_sheet": "1m9mqzS0Vw1qepTOvIJXIJLCzgWwsWZyYz-8iISGD4PY",
-		"tapahtumat_sheet": "1y-zFM-3GE44BLpv4O6TOfU_o6Mtu9ZwyfGWQhCZ7WoE",
-		"kayttajat_sheet": "1DYq5i7HDH4_5WkjF92pwEA8fb-woAY5wh5bCwMUIp8w"
+		"config_drive": "1mFjK1B-yDdpComRogMCC_6J1mKHHFXVWcJCo_pW4DtY"
 	}
 }

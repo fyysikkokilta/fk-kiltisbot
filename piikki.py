@@ -20,8 +20,6 @@ import settings
 if settings.settings["drive_backend"]:
     import drive
 
-admin_ids = settings.settings["admins"]
-
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
 
@@ -72,7 +70,6 @@ def button(bot, update):
     print(price)
 
     db.add_transaction(user, name, query.data, time, price)
-    db.update_stock(query.data, -1)
     db.update_balance(user, -price)
 
     saldo = db.get_balance(user)
@@ -323,8 +320,9 @@ def backup(bot, context):
     transactions = drive.export_transactions()
     drive.export_inventory()
 
-    for i in admin_ids:
-        bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
+    for i in settings.secrets["chats"]:
+        if settings.secrets["chats"][i]["backup_report"]:
+            bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
 
 def kulutus(bot, context):
     """Prints the daily tab events to the group chat."""
@@ -335,7 +333,9 @@ def kulutus(bot, context):
     for i in tuotteet:
         text += "{:_<18.18}{:2d} kpl\n".format(i[0].strip() + " ", i[1])
 
-    bot.send_message(settings.secrets["chat_id"], text + "```", parse_mode="MARKDOWN")
+    for i in settings.secrets["chats"]:
+        if settings.secrets["chats"][i]["daily_report"]:
+            bot.send_message(i, text + "```", parse_mode="MARKDOWN")
 
 
 def velo(bot, update):
@@ -398,9 +398,10 @@ def is_registered(bot, update):
 def is_admin(bot, update):
     """Check if user is admin."""
 
-    if update.effective_user.id in admin_ids:
+    if str(update.effective_user.id) in settings.secrets["admins"].keys():
         return True
     else:
+        print(settings.secrets["admins"].keys())
         bot.send_message(update.message.chat.id, "You are not authorized.")
         return False
 

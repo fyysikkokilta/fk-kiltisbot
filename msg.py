@@ -111,8 +111,11 @@ def send_from_private(bot, update):
     """Forward a private message sent for the bot to the receiving chat anonumously"""
 
     msg = update.effective_message
-    sent_message = robust_send_message(bot, msg, settings.secrets["chat_id"], None)
-    sent_messages[sent_message.message_id] = (msg.chat.id, msg.message_id)
+
+    for i in settings.secrets["chats"]:
+        if settings.secrets["chats"][i]["messages"]:
+            sent_message = robust_send_message(bot, msg, int(i), None)
+            sent_messages[sent_message.message_id] = (msg.chat.id, msg.message_id)
 
 
 def reply(bot, update):
@@ -122,3 +125,4 @@ def reply(bot, update):
     if id in sent_messages:
         org = sent_messages[id]
         robust_send_message(bot, update.effective_message, org[0], org[1])
+
