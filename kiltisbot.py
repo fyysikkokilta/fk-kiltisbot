@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """A file that runs all the feature of Kiltisbot. 
-Run this file with python kiltisbot.py to start the bot 
-but be sure to update the "cofig.json" file with your bot tokens etc. first. 
+Run this file with python kiltisbot.py to start the bot. 
 """
 
 from uuid import uuid4
@@ -137,7 +136,7 @@ def main():
         dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
         dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
         dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
-        dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
+        #dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
 
     if settings.settings["calendar"]:
         #handlers for the calendar feature
