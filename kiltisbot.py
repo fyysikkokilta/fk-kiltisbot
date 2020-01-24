@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""A file that runs all the feature of Kiltisbot. 
-Run this file with python kiltisbot.py to start the bot. 
+"""A file that runs all the feature of Kiltisbot.
+Run this file with python kiltisbot.py to start the bot.
 """
 
 from uuid import uuid4
@@ -17,6 +17,7 @@ from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInli
 import logging
 
 import settings
+import fiirumi
 
 settings.init_settings()
 
@@ -65,7 +66,7 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
 
 def help(bot, update):
-    update.message.reply_text("""Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta. 
+    update.message.reply_text("""Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta.
 
 Jos haluat lisätietoja kiltistoimikunnan kanssa viestittelystä kirjoita:
 /viesti_ohje
@@ -90,7 +91,7 @@ def whoami(bot, update):
     bot.send_message(id, "Tämän chätin ID on {}".format(id))
 
 def main():
-    
+
     global updater, saldo_sanat
     updater = Updater(token = BOT_TOKEN)
 
@@ -102,15 +103,17 @@ def main():
 
     dp.add_handler(CommandHandler("start",         start))
     dp.add_handler(CommandHandler("whoami",        whoami))
-    
+
     dp.add_handler(CommandHandler("help",          help, Filters.private))
     dp.add_handler(CommandHandler("viesti_ohje",   msg.ohje, Filters.private))
     dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
-    
+    dp.add_handler(CommandHandler("subscribe",     fiirumi.subscribe))
+
     if settings.settings["store"]:
         #handlers related to the store feature
 
         jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
+        jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=10)
 
         dp.add_handler(piikki.saldo_handler)
         dp.add_handler(piikki.poisto_handler)
@@ -127,7 +130,7 @@ def main():
         dp.add_handler(CommandHandler("velo",                piikki.velo, Filters.private))
 
         dp.add_handler(CallbackQueryHandler(piikki.button))
-        
+
     if settings.settings["drive_backend"]:
         #handlers for the drive backend
 
@@ -150,10 +153,10 @@ def main():
 
         dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
         dp.add_handler(MessageHandler(Filters.reply, msg.reply))
-    
+
         dp.add_handler(InlineQueryHandler(msg.inlinequery))
         dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
-        
+
     if settings.settings["calendar"]:
         #handler tanaan feature
 

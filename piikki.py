@@ -16,6 +16,7 @@ import datetime
 import db
 import math
 import settings
+import fiirumi
 
 if settings.settings["drive_backend"]:
     import drive
@@ -53,6 +54,10 @@ def store(bot, update):
 
 def button(bot, update):
     """Callback funtion for the inline keyboard buttons that handles what happens when user chooses an option in the store."""
+
+    if update.callback_query.data.split(" ")[-1] in fiirumi.emojis:
+        fiirumi.vote_message(bot, update)
+        return
 
     if not is_registered(bot, update):
         return
