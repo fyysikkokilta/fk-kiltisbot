@@ -23,6 +23,7 @@ def get_posts_after(time):
 def check_messages(bot, update):
 
     global keyboard
+    global data
 
     lorina_id = 7
 
@@ -34,47 +35,45 @@ def check_messages(bot, update):
     for p in posts:
         for c in data["chats"]:
             msg = format_message(p)
-            data = load_data()
             if not (p["category_id"] == lorina_id and c["name"] == "Fyysikkokilta"):
                 text = format_message(p)
                 msg = bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
-                data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id})
+                data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": []})
 
 
     save_data(data)
 
 def vote_message(bot, update):
 
+    global data
     data = load_data()
 
     message = update.effective_message.message_id
     chat = update.effective_chat.id
+    sender = update.effective_user.id
+#    print(update.effective_message.entities)
 
     emoji = update.callback_query.data.split(" ")[-1]
-    username = [x["username"] for x in data["sent_messages"] if x["chat"] == chat and x["message"] == message][0]
+    index = [data["sent_messages"].index(x) for x in data["sent_messages"] if x["chat"] == chat and x["message"] == message][0]
+    sent_message = data["sent_messages"][index]
 
-    index = [data.index(x) for x in data["users"] if x["username"] == username][0]
-    user = data["users"][index]
+    if not sender in sent_message["voters"]:
+        sent_message["voters"].append(sender)
+        bot.edit_message_reply_markup(
+            chat_id = chat,
+            message_id = message,
+            #text = update.effective_message.text,
+            reply_markup = InlineKeyboardMarkup(update_keyboard(update.effective_message.reply_markup.inline_keyboard, emoji)))
 
-    try:
-        user["emojis"][emoji] += 1
-    except KeyError:
-        user["emojis"][emoji] = 1
+        data["sent_messages"][index] = sent_message
+        save_data(data)
 
-    data["users"][index] = user
-
-    bot.edit_message_text(
-        chat_id = chat,
-        message_id = message,
-        text = update.effective_message.text,
-        reply_markup = InlineKeyboardMarkup(update_keyboard(update.message.reply_markup.inline_keyboard, emoji))
-    )
-
-    save_data(data)
+    return
 
 def format_message(post):
 
-    data = load_data()
+    global data
+
     base_url = "https://fiirumi.fyysikkokilta.fi/t/"
 
     user = [x for x in data["users"] if x["username"] == post["username"]]
@@ -87,18 +86,19 @@ def format_message(post):
     else:
         emojis = user[0]["emojis"]
 
-    emoji_string = " " +  "".join([str(emojis[key]) for key in emojis])
+    emoji_string = " " +  "".join([str(emojis[key]) + key for key in emojis])
 
-    text = "Uusi postaus Φiirumilla!\n\n *{}*\n _{}_({}{}) \n\n [Lue koko postaus]({})"
-    text = text.format(post["topic_title"], post["name"], post["username"],
-                       emoji_string, base_url + post["topic_slug"])
+    text = "Uusi postaus Φiirumilla!\n\n *{}*\n _{}_ ({}) \n\n [Lue koko postaus]({})"
+    text = text.format(post["topic_title"], post["name"], post["username"], base_url + post["topic_slug"])
 
-    save_data(data)
     return text
 
 def update_keyboard(keyboard, emoji):
 
-    idx = [keyboard[0].index(e) for e in keyboard[0] if e.callback_data == emoji][0]
+    global emojis
+    idx = [emojis.index(e) for e in emojis if e == emoji][0]
+
+    print(idx)
     text = keyboard[0][idx].text.split(" ")
     if len(text) == 2:
         number = str(int(text[0]) + 1)
@@ -111,7 +111,9 @@ def update_keyboard(keyboard, emoji):
 
 def subscribe(bot, update):
 
+    global data
     data = load_data()
+
     data["chats"].append({"name": update.effective_chat.title, "id": update.effective_chat.id})
     save_data(data)
     bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
@@ -145,5 +147,8 @@ data_file = "fiirumi_data.json"
 if not os.path.isfile(data_file):
     create_data()
 
-emojis = ["👍","😂","😍","🎉","🙈","💩"]
+global data
+data = load_data()
+
+emojis = ["👍","😂","😍","🙈"]
 keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(i, callback_data=i) for i in emojis]])
