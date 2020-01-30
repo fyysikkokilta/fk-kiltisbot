@@ -38,7 +38,7 @@ def check_messages(bot, update):
             if not (p["category_id"] == lorina_id and c["name"] == "Fyysikkokilta"):
                 text = format_message(p)
                 msg = bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
-                data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": []})
+                data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
 
 
     save_data(data)
@@ -51,23 +51,43 @@ def vote_message(bot, update):
     message = update.effective_message.message_id
     chat = update.effective_chat.id
     sender = update.effective_user.id
-#    print(update.effective_message.entities)
+#    #print(update.effective_message.entities)
 
     emoji = update.callback_query.data.split(" ")[-1]
     index = [data["sent_messages"].index(x) for x in data["sent_messages"] if x["chat"] == chat and x["message"] == message][0]
     sent_message = data["sent_messages"][index]
 
-    if not sender in sent_message["voters"]:
-        sent_message["voters"].append(sender)
+    #print(sent_message["voters"].keys())
+    #print(sender)
+    #print(sender in sent_message["voters"].keys())
+    if not str(sender) in sent_message["voters"].keys():
+        sent_message["voters"][str(sender)] = emoji
         bot.edit_message_reply_markup(
             chat_id = chat,
             message_id = message,
             #text = update.effective_message.text,
-            reply_markup = InlineKeyboardMarkup(update_keyboard(update.effective_message.reply_markup.inline_keyboard, emoji)))
+            reply_markup = InlineKeyboardMarkup(update_keyboard(update.effective_message.reply_markup.inline_keyboard, emoji, 1)))
 
         data["sent_messages"][index] = sent_message
         save_data(data)
+    else:
+        prev_emoji = sent_message["voters"][str(sender)]
+        #print(prev_emoji)
+        new_keyboard = update_keyboard(update.effective_message.reply_markup.inline_keyboard, prev_emoji, -1)
+        #print(new_keyboard)
+        new_keyboard =  update_keyboard(new_keyboard, emoji, 1)
+        #print(new_keyboard)
 
+        bot.edit_message_reply_markup(
+            chat_id = chat,
+            message_id = message,
+            #text = update.effective_message.text,
+            reply_markup = InlineKeyboardMarkup(new_keyboard))
+
+        sent_message["voters"][str(sender)] = emoji
+
+        data["sent_messages"][index] = sent_message
+        save_data(data)
     return
 
 def format_message(post):
@@ -87,13 +107,14 @@ def format_message(post):
         emojis = user[0]["emojis"]
 
     emoji_string = " " +  "".join([str(emojis[key]) + key for key in emojis])
+    post_type = "vastaus" if post["post_number"] > 1 else "postaus"
 
-    text = "Uusi postaus Φiirumilla!\n\n *{}*\n _{}_ ({}) \n\n [Lue koko postaus]({})"
-    text = text.format(post["topic_title"], post["name"], post["username"], base_url + post["topic_slug"])
+    text = "Uusi {} Φrumilla!\n\n *{}*\n _{}_ ({}) \n\n[Lue koko postaus]({})"
+    text = text.format(post_type, post["topic_title"], post["name"], post["username"],  base_url + post["topic_slug"])
 
     return text
 
-def update_keyboard(keyboard, emoji):
+def update_keyboard(keyboard, emoji, diff):
 
     global emojis
     idx = [emojis.index(e) for e in emojis if e == emoji][0]
@@ -101,11 +122,14 @@ def update_keyboard(keyboard, emoji):
     #print(idx)
     text = keyboard[0][idx].text.split(" ")
     if len(text) == 2:
-        number = str(int(text[0]) + 1)
+        number = str(int(text[0]) + diff)
     else:
         number = 1
 
-    keyboard[0][idx].text = "{} {}".format(number, emoji)
+    if number == "0":
+        keyboard[0][idx].text = emoji
+    else:
+        keyboard[0][idx].text = "{} {}".format(number, emoji)
 
     return keyboard
 
