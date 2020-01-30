@@ -115,10 +115,10 @@ def get_last_transaction(user):
     conn.close()
     return cur
 
-def get_transactions_after(id):
+def get_transactions_after(time):
     conn = sqlite3.connect(settings.secrets["database"])
     c = conn.cursor()
-    cur = c.execute("SELECT * FROM transactions WHERE id > ? ", (id,)).fetchall()
+    cur = c.execute("SELECT * FROM transactions WHERE aika > ? ", (time,)).fetchall()
     conn.close()
     return cur
 

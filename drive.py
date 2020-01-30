@@ -74,14 +74,19 @@ def import_transactions():
 
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:F").execute()["values"]
-    print(result)
-    values = list(map(lambda x: (int(x[1]), x[3], x[5], int(x[4])), result))
+    print(result[:10])
+    values = list(map(lambda x: (int(x[1]), x[3], x[5], int(float(x[4]))), result[1:]))
+    print(values[:10])
     #values = list(map(lambda x: (x[1], x[3], x[5], x[4]), result))
 
     db.delete_transactions()
 
     for i in values:
-        db.add_transaction(i[0], None, i[1], i[2], i[3])
+        try: 
+            db.add_transaction(int(i[0]), None, i[1], i[2], int(i[3]))
+        except:
+            pass
+            #print(i)
 
     return len(values)
 
@@ -142,12 +147,12 @@ def export_transactions():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:A").execute()
+    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:F").execute()
     values = result.get('values', [])
 
-    end = 0
+    end = "2019-01-01"
     if len(values) > 1:
-        end = int(values[-1][0])
+        end = values[-1][5]
 
     trans = db.get_transactions_after(end)
 

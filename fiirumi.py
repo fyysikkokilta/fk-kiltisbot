@@ -81,7 +81,7 @@ def format_message(post):
     emojis = None
     if len(user) == 0:
         data["users"] += [{"username": post["username"], "emojis": {}}]
-        print(data["users"])
+        #print(data["users"])
         emojis = {}
     else:
         emojis = user[0]["emojis"]
@@ -98,7 +98,7 @@ def update_keyboard(keyboard, emoji):
     global emojis
     idx = [emojis.index(e) for e in emojis if e == emoji][0]
 
-    print(idx)
+    #print(idx)
     text = keyboard[0][idx].text.split(" ")
     if len(text) == 2:
         number = str(int(text[0]) + 1)
@@ -113,10 +113,11 @@ def subscribe(bot, update):
 
     global data
     data = load_data()
-
-    data["chats"].append({"name": update.effective_chat.title, "id": update.effective_chat.id})
-    save_data(data)
-    bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
+    chats = [x["id"] for x in data["chats"]]
+    if update.effective_chat.id not in chats:
+        data["chats"].append({"name": update.effective_chat.title, "id": update.effective_chat.id})
+        save_data(data)
+        bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
 
 
 def load_data():

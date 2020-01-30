@@ -113,7 +113,7 @@ def main():
         #handlers related to the store feature
 
         jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
-        jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=10)
+        jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=60)
 
         dp.add_handler(piikki.saldo_handler)
         dp.add_handler(piikki.poisto_handler)
