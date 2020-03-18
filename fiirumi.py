@@ -5,6 +5,7 @@ import json
 import datetime
 import os
 
+from telegram.error import BadRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
@@ -17,6 +18,8 @@ def get_posts_after(time):
     data = json.loads(res.text)
 
     posts = [x for x in data["latest_posts"] if x["created_at"] > time]
+
+    posts.reverse()
 
     return posts
 
@@ -35,10 +38,16 @@ def check_messages(bot, update):
     for p in posts:
         for c in data["chats"]:
             msg = format_message(p)
+            #print(p)
             if not (p["category_id"] == lorina_id and c["name"] == "Fyysikkokilta"):
                 text = format_message(p)
-                msg = bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
-                data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
+                print("{} {}".format(c["id"], c["name"]))
+                try:
+                    msg = bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
+                    data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
+                except BadRequest:
+                
+                    print("Sending message {} to {} failed.".format(text, c["name"]))
 
 
     save_data(data)
@@ -110,7 +119,7 @@ def format_message(post):
     post_type = "vastaus" if post["post_number"] > 1 else "postaus"
 
     text = "Uusi {} Φrumilla!\n\n *{}*\n _{}_ ({}) \n\n[Lue koko postaus]({})"
-    text = text.format(post_type, post["topic_title"], post["name"], post["username"],  base_url + post["topic_slug"])
+    text = text.format(post_type, post["topic_title"], post["name"], post["username"].replace("_", "\_"),  base_url + post["topic_slug"])
 
     return text
 
