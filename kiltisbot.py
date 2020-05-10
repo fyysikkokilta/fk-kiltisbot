@@ -59,7 +59,6 @@ def start(bot, update):
     print(update)
     update.message.reply_text('Heippa! Kirjoita /help, niin pääset alkuun.')
 
-
 def error(bot, update, error):
     """Log Errors caused by Updates."""
 
@@ -76,6 +75,18 @@ Jos haluat lisätietoja sähköisestä piikistä, kirjoita:
 """)
     return
 
+def help_in_english(bot, update):
+    update.message.reply_text(""" This bot is maintained by Guild room committee of the Guild of physics. It provides various Telegram integrations of Guild's services e.g. calendars, Fiirumi discussion board and candy store.
+
+How to communicate with Guild room committee via this bot:
+/messaging_instructions
+
+More info about candy store:
+/candy_store
+
+We encourage to experiment with other commands as well.
+""")
+    return
 
 def flush_messages(bot):
     """Flushes the messages send to the bot during downtime so that the bot does not start spamming when it gets online again."""
@@ -105,7 +116,9 @@ def main():
     dp.add_handler(CommandHandler("whoami",        whoami))
 
     dp.add_handler(CommandHandler("help",          help, Filters.private))
+    dp.add_handler(CommandHandler("help_in_english", help_in_english, Filters.private))
     dp.add_handler(CommandHandler("viesti_ohje",   msg.ohje, Filters.private))
+    dp.add_handler(CommandHandler("messaging_instructions",   msg.ohje_in_english, Filters.private))
     dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
     dp.add_handler(CommandHandler("subscribe",     fiirumi.subscribe))
 
@@ -125,6 +138,7 @@ def main():
         dp.add_handler(CommandHandler("hinnasto",      piikki.hinnasto, Filters.private))
         dp.add_handler(CommandHandler("komennot",      piikki.komennot, Filters.private))
         dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
+        dp.add_handler(CommandHandler("candy_store",   piikki.ohje_in_english, Filters.private))
         dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
 
         dp.add_handler(CommandHandler("velo",                piikki.velo, Filters.private))

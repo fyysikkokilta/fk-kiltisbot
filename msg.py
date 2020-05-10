@@ -18,13 +18,18 @@ sent_messages = {}
 with open("ohje.txt", "r") as f:
     manual = f.read()
 
+with open("ohje_en.txt", "r") as f:
+    manual_en = f.read()
+
 def ohje(bot, update):
     """Send help"""
 
-    bot.send_message(
-        update.effective_chat.id,
-        manual,
-        parse_mode = "HTML")
+    bot.send_message(update.effective_chat.id, manual, parse_mode = "HTML")
+
+def ohje_in_english(bot, update):
+    """Send help"""
+
+    bot.send_message(update.effective_chat.id, manual_en, parse_mode = "HTML")
 
 def kuva(bot, update):
     """Send graphical help"""

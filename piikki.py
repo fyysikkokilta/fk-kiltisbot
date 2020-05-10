@@ -24,6 +24,9 @@ if settings.settings["drive_backend"]:
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
 
+with open("piikki_ohje_en.txt", "r") as f:
+    ohje_teksti_en = f.read()
+
 def store(bot, update):
     """Handles the "kauppa" commad for the bot. Prints the products as buttons that can be used to buy products."""
 
@@ -281,6 +284,12 @@ def ohje(bot, update):
 
     global ohje_teksti
     bot.send_message(update.effective_user.id, ohje_teksti, parse_mode = "HTML")
+
+def ohje_in_english(bot, update):
+    """Prints the manual for using the store."""
+
+    global ohje_teksti_en
+    bot.send_message(update.effective_user.id, ohje_teksti_en, parse_mode = "HTML")
 
 def export_users(bot, update):
     """Export users to Google sheets."""
