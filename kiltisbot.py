@@ -57,7 +57,11 @@ BOT_TOKEN = settings.secrets["bot_token"]
 def start(bot, update):
     """Send a message when the command /start is issued."""
     print(update)
-    update.message.reply_text('Heippa! Kirjoita /help, niin pääset alkuun.')
+    update.message.reply_text("""Hello!
+
+Kirjoita /help, niin pääset alkuun.
+
+To get started, press /help_in_english""")
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
@@ -65,7 +69,9 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
 
 def help(bot, update):
-    update.message.reply_text("""Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta.
+    update.message.reply_text("""For information in English, press /help_in_english
+
+Tämä on kiltistoimikunnan botti, jonka tarkoituksena on parantaa kiltalaisten kiltiskokemusta.
 
 Jos haluat lisätietoja kiltistoimikunnan kanssa viestittelystä kirjoita:
 /viesti_ohje
