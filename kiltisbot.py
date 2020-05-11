@@ -61,7 +61,7 @@ def start(bot, update):
 
 Kirjoita /help, niin pääset alkuun.
 
-To get started, press /help_in_english""")
+To get started press /help_in_english""")
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
@@ -125,7 +125,6 @@ def main():
     dp.add_handler(CommandHandler("help_in_english", help_in_english, Filters.private))
     dp.add_handler(CommandHandler("viesti_ohje",   msg.ohje, Filters.private))
     dp.add_handler(CommandHandler("messaging_instructions",   msg.ohje_in_english, Filters.private))
-    dp.add_handler(CommandHandler("kuva",          msg.kuva, Filters.private))
     dp.add_handler(CommandHandler("subscribe",     fiirumi.subscribe))
 
     if settings.settings["store"]:
@@ -173,9 +172,6 @@ def main():
 
         dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
         dp.add_handler(MessageHandler(Filters.reply, msg.reply))
-
-        dp.add_handler(InlineQueryHandler(msg.inlinequery))
-        dp.add_handler(ChosenInlineResultHandler(msg.inlineresult))
 
     if settings.settings["calendar"]:
         #handler tanaan feature
