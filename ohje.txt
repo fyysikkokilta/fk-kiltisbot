@@ -1,25 +1,12 @@
 Jos haluat lisätietoja sähköisen kiltispikkin käytöstä kirjoita /piikki_ohje.
 
-@Fk_kiltisbot on suora yhteys kiltistoimikuntaan ja se on tarkoitettu palautteen ja kehitysehdotusten välittämiseen tai maidon yms. puutteesta valittamiseen. 
+@Fk_kiltisbot on suora yhteys kiltistoimikuntaan ja se on tarkoitettu palautteen ja kehitysehdotusten välittämiseen tai maidon yms. puutteesta valittamiseen.
 
-Bottia voi käyttää <b>inline-viesteillä</b> tai lähettämällä botille suoraan <b>yksityisviestejä</b>.
-
-<b>Yksityisviestit</b> 
+<b>Yksityisviestit</b>
 
 Yksityisviestit toimivat siten, että lähetät tälle botille viestin. Yksityisviestit ovat automaattisesti anonyymejä ja tuetut viestimuodot ovat ainakin teksti, kuva, video, stikkeri, ympyrävideo, gifi, tiedosto, sijainti ja ääni. Botti mahdollistaa, että kiltistoimarit myös vastata botin kautta viesteihisi. Jos haluat, että kiltistoimikunta tietää kuka olet, allekirjoita viestisi.
 
 Botti tallentaa lähettämistäsi viesteistä sinun ja botin kahdenkeskisen keskustelun id:n ja lähetetyn viestin id:n välimuistissa olevaan tietorakenteeseen. Epärehellinen ylläpitäjä voisi periaatteessa identiteettisi sieltä onkia. Minun kiinnostukseni ei ainakaan tähän riitä ja lisäksi olen rehellinen, joten henkilöllisyytesi on turvassa.
-
-
-Inline-viestit toimivat missä tahansa keskustelussa ja voit valita haluatko lähettää viestit omalla nimelläsi vai anonyymisti. Inline-viestit tukevat pelkästään tekstiä ja niitä voi käyttää esimerkiksi avauksina ryhmäkeskusteluissa. <b>Kiltistoimarit eivät voi vastata inline-viesteihin.</b>
-
-<b>Inline-viestit</b> toimivat seuraavasti:
-
-<b>1.</b> Kirjoita tekstikenttään @Fk_kiltisbot, jolloin tekstikentän päälle ilmestyvät vaihtoehdot "Lähetä kiltistoimareille" ja "Lähetä kiltistoimareille anonyymisti".
-<b>2.</b> Kirjoita viesti, jonka haluat lähettää.
-<b>3.</b> Valitse lähetysmuoto painamalla haluamaasi vaihtoehtoa.
-
-Jos tämä selitys ei ole riittävä, kuvallisen selityksen saa kirjoittamalla /kuva.
 
 Kiltisbot osaa myös hakea killan tulevat tapahtumat Google-kalenterista, jos kirjoitat /tapahtumat.
 
@@ -27,7 +14,4 @@ Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @Stippos.
 
 Muista myös kiltistoimikunnan muut palvelut kuten @TsufeBot.
 
-<b>Change log:</b>
-16.1.2019 Kiltisbot v0.1
-17.1.2019 Kiltisbot v0.1.1 Added support for audio and location messages
-21.1.2019 Kiltisbot v0.2 Added Google calendar events
+Kiltisbotin lähdekoodi: https://github.com/fyysikkokilta/fk-kiltisbot
