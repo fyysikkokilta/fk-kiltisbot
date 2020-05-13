@@ -24,6 +24,7 @@ settings.init_settings()
 if settings.settings["store"]:
     import db
     import piikki
+    import analytics
 
 if settings.settings["calendar"]:
     import kalenteri
@@ -145,9 +146,8 @@ def main():
         dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
         dp.add_handler(CommandHandler("candy_store",   piikki.ohje_in_english, Filters.private))
         dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
-
-        dp.add_handler(CommandHandler("velo",                piikki.velo, Filters.private))
-
+        dp.add_handler(CommandHandler("kulutus",       analytics.send_histogram, Filters.private))
+        dp.add_handler(CommandHandler("velo",          piikki.velo, Filters.private))
         dp.add_handler(CallbackQueryHandler(piikki.button))
 
     if settings.settings["drive_backend"]:
@@ -177,7 +177,6 @@ def main():
         #handler tanaan feature
 
         dp.add_handler(MessageHandler(Filters.text, kalenteri.tanaan_text))
-
 
     dp.add_error_handler(error)
 
