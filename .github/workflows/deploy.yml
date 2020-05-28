@@ -23,7 +23,8 @@ jobs:
         key: ${{ secrets.KEY }}
         script: |
           tmux kill-session -t kiltisbot
-          git -C fk-kiltisbot pull
+          cd fk-kiltisbot
+          git pull
           tmux new-session -d -s kiltisbot \
-          "source fk-kiltisbot/kiltisbot-env/bin/activate && \
-          python3 fk-kiltisbot/kiltisbot.py"
+          "source kiltisbot-env/bin/activate && \
+          python3 kiltisbot.py"
