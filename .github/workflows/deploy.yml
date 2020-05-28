@@ -25,5 +25,5 @@ jobs:
           tmux kill-session -t kiltisbot
           git -C fk-kiltisbot pull
           tmux new-session -d -s kiltisbot \
-          "source fk-kiltisbot/kiltisbot-env/bin/activate;
-          python fk-kiltisbot/kiltisbot.py"
+          "source fk-kiltisbot/kiltisbot-env/bin/activate && \
+          python3 fk-kiltisbot/kiltisbot.py"
