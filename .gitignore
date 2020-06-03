@@ -1,3 +1,4 @@
+env
 *.pyc
 credentials.json
 creds.json
