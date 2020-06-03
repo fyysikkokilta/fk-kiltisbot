@@ -1,5 +1,5 @@
 # This workflow takes ssh connection to Guild's server, pulls latest
-# changes and restarts bot in new tmux session. Currently new dependencies 
+# changes and restarts bot in new tmux session. Currently new dependencies
 # are not installed but they must be added manually in server.
 
 name: Update bot on Guild's server
@@ -26,5 +26,6 @@ jobs:
           cd fk-kiltisbot
           git pull
           tmux new-session -d -s kiltisbot \
-          "source kiltisbot-env/bin/activate && \
+          "source env/bin/activate &&
+          pip install -r requirements.txt &&
           python3 kiltisbot.py"
