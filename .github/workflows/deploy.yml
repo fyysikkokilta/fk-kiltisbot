@@ -1,6 +1,5 @@
 # This workflow takes ssh connection to Guild's server, pulls latest
-# changes and restarts bot in new tmux session. Currently new dependencies
-# are not installed but they must be added manually in server.
+# changes and restarts bot in new tmux session.
 
 name: Update bot on Guild's server
 
