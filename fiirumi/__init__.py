@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+"""
+This package looks Discourse api for new posts and replies in
+https://fiirumi.fyysikkokilta.fi and notifies about them in chats where
+notifications are subscribed and also provides emoji responses for new posts.
+"""
 
 import requests
 import json
@@ -7,6 +11,8 @@ import os
 
 from telegram.error import BadRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+# TODO consider moving url to some conf file
 
 
 def get_posts_after(time):
@@ -38,7 +44,6 @@ def check_messages(bot, update):
     for p in posts:
         for c in data["chats"]:
             msg = format_message(p)
-            #print(p)
             if not (p["category_id"] == lorina_id and c["name"] == "Fyysikkokilta"):
                 text = format_message(p)
                 print("{} {}".format(c["id"], c["name"]))
@@ -46,7 +51,7 @@ def check_messages(bot, update):
                     msg = bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
                     data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
                 except BadRequest:
-                
+
                     print("Sending message {} to {} failed.".format(text, c["name"]))
 
 
@@ -60,37 +65,28 @@ def vote_message(bot, update):
     message = update.effective_message.message_id
     chat = update.effective_chat.id
     sender = update.effective_user.id
-#    #print(update.effective_message.entities)
 
     emoji = update.callback_query.data.split(" ")[-1]
     index = [data["sent_messages"].index(x) for x in data["sent_messages"] if x["chat"] == chat and x["message"] == message][0]
     sent_message = data["sent_messages"][index]
 
-    #print(sent_message["voters"].keys())
-    #print(sender)
-    #print(sender in sent_message["voters"].keys())
     if not str(sender) in sent_message["voters"].keys():
         sent_message["voters"][str(sender)] = emoji
         bot.edit_message_reply_markup(
             chat_id = chat,
             message_id = message,
-            #text = update.effective_message.text,
             reply_markup = InlineKeyboardMarkup(update_keyboard(update.effective_message.reply_markup.inline_keyboard, emoji, 1)))
 
         data["sent_messages"][index] = sent_message
         save_data(data)
     else:
         prev_emoji = sent_message["voters"][str(sender)]
-        #print(prev_emoji)
         new_keyboard = update_keyboard(update.effective_message.reply_markup.inline_keyboard, prev_emoji, -1)
-        #print(new_keyboard)
         new_keyboard =  update_keyboard(new_keyboard, emoji, 1)
-        #print(new_keyboard)
 
         bot.edit_message_reply_markup(
             chat_id = chat,
             message_id = message,
-            #text = update.effective_message.text,
             reply_markup = InlineKeyboardMarkup(new_keyboard))
 
         sent_message["voters"][str(sender)] = emoji
@@ -110,7 +106,6 @@ def format_message(post):
     emojis = None
     if len(user) == 0:
         data["users"] += [{"username": post["username"], "emojis": {}}]
-        #print(data["users"])
         emojis = {}
     else:
         emojis = user[0]["emojis"]
@@ -128,7 +123,6 @@ def update_keyboard(keyboard, emoji, diff):
     global emojis
     idx = [emojis.index(e) for e in emojis if e == emoji][0]
 
-    #print(idx)
     text = keyboard[0][idx].text.split(" ")
     if len(text) == 2:
         number = str(int(text[0]) + diff)
