@@ -37,7 +37,7 @@ if settings.settings["store"]:
     import analytics
 
 if settings.settings["calendar"]:
-    import kalenteri
+    import fkcal
 
 if settings.settings["messaging"]:
     import msg
@@ -167,8 +167,8 @@ def main():
     if settings.settings["calendar"]:
         #handlers for the calendar feature
 
-        dp.add_handler(CommandHandler("tapahtumat",    kalenteri.tapahtumat))
-        dp.add_handler(CommandHandler("tanaan",        kalenteri.tanaan_command))
+        dp.add_handler(CommandHandler("tapahtumat",    fkcal.tapahtumat))
+        dp.add_handler(CommandHandler("tanaan",        fkcal.tanaan_command))
 
     if settings.settings["messaging"]:
         #handlers for the messaging functionality
@@ -179,7 +179,7 @@ def main():
     if settings.settings["calendar"]:
         #handler tanaan feature
 
-        dp.add_handler(MessageHandler(Filters.text, kalenteri.tanaan_text))
+        dp.add_handler(MessageHandler(Filters.text, fkcal.tanaan_text))
 
     dp.add_error_handler(error)
 
