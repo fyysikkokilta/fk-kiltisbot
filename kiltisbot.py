@@ -19,7 +19,17 @@ import logging
 import settings
 import fiirumi
 
-settings.init_settings()
+
+env = None
+
+if len(sys.argv) == 1:
+    env = "PROD"
+else:
+    env = sys.argv[1]
+
+
+settings.init_secrets(env)
+#settings.init_settings()
 
 if settings.settings["store"]:
     import db
@@ -32,14 +42,7 @@ if settings.settings["calendar"]:
 if settings.settings["messaging"]:
     import msg
 
-env = None
 
-if len(sys.argv) == 1:
-    env = "PROD"
-else:
-    env = sys.argv[1]
-
-settings.init_secrets(env)
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN= range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
