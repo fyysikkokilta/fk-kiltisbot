@@ -82,7 +82,7 @@ def import_transactions():
     db.delete_transactions()
 
     for i in values:
-        try: 
+        try:
             db.add_transaction(int(i[0]), None, i[1], i[2], int(i[3]))
         except:
             pass
@@ -108,7 +108,7 @@ def export_inventory():
 def export_users():
     service = build('sheets', 'v4', credentials=creds)
     sheet = service.spreadsheets()
-    
+
     date = datetime.datetime.today().isoformat()[:16].replace(":", ".")
 
     users = list(map(lambda x: [str(i) for i in x], db.get_users()))
@@ -185,7 +185,7 @@ def get_secrets(env):
     for i in chats[1:]:
         if i[1] == env:
             chat_dict[i[0].replace("−", "-")] = {"messages": int(i[2]), "daily_report": int(i[3]), "backup_report": int(i[4])}
-    
+
     counter = 0
     for i in chat_dict:
         counter += chat_dict[i]["messages"]
