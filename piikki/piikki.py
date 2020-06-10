@@ -3,21 +3,22 @@
 """Contains all the functions to use the tab functionality of Kiltisbot.
 """
 
-ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
-saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
+import datetime
+import math
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,
  InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult)
-
 from telegram.ext import (Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler,
   Filters, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler)
 
-import datetime
-import db
-import math
-import fiirumi
 import config
+import db
+import db.drive
+import fiirumi
 
+
+ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
+saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
 
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()

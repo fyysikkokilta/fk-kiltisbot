@@ -1,59 +1,29 @@
-"""This file handles getting the events from the Guild of Physics
-Google calendar using Google's calendar API. If user don't have
-required credentials browser opens and user can sign in to Google
-to create them."""
+"""
+This file handles getting the events from the Guild of Physics
+Google calendar using Google's calendar API.
+"""
 
-from __future__ import print_function
 import datetime
-import pickle
-import os.path
 import time
 
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 
 import config
-
-# TODO check if drive integration is possible with same creds
-# TODO move authorization and initializing creds to own module
-
-# If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-
-calendars = config.GOOGLE_CALENDARS
+import google_auth
 
 
 def get_events():
     """ Prints the start and name of the next 10 events on the user's calendar."""
 
     all_calendar_events = {}
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('calendar_token.pickle'):
-        with open('calendar_token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server()
-        # Save the credentials for the next run
-        with open('calendar_token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
 
     # Suppress warning in logs
     # https://github.com/googleapis/google-api-python-client/issues/299
-    service = build('calendar', 'v3', credentials=creds, cache_discovery=False)
+    service = build('calendar', 'v3', credentials=google_auth.creds, cache_discovery=False)
 
     now = datetime.datetime.utcnow().today().isoformat() + 'Z' # 'Z' indicates UTC time
 
-    for calendar_name, calendar_id in calendars.items():
+    for calendar_name, calendar_id in config.GOOGLE_CALENDARS.items():
         all_events = []
         events_result = service.events().list(calendarId=calendar_id, timeMin=now,
                 maxResults=10, singleEvents=True, orderBy='startTime').execute()
