@@ -13,18 +13,15 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+import config
+
+# TODO check if drive integration is possible with same creds
+# TODO move authorization and initializing creds to own module
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
-# TODO consider moving these to config
-calendars = {
-    "FK Tapahtumat": "ahe0vjbi6j16p25rcftgfou5eg@group.calendar.google.com",
-    "FK Kokoukset": "guqva296aoq695aqgq68ak7lkc@group.calendar.google.com",
-    "FK Fuksit": "u6eju2k63ond2fs7fqvjbna50c@group.calendar.google.com",
-    "FK Kulttuuri": "hjhvblcv9n1ue3tf29j3loqqi4@group.calendar.google.com",
-    "FK Liikunta": "0orqvov2gidl3m24cnsq4ml1ao@group.calendar.google.com",
-    "FK Ura ja opinnot": "ji339ebgiaauv5nk07g41o65q8@group.calendar.google.com"
-}
+calendars = config.GOOGLE_CALENDARS
 
 
 def get_events():

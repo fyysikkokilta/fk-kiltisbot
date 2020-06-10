@@ -9,7 +9,7 @@ from google.auth.transport.requests import Request
 
 import db
 import datetime
-import settings
+import config
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/calendar.readonly']
@@ -40,7 +40,7 @@ def import_inventory():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tuotteet"], range="A1:3", majorDimension = "COLUMNS").execute()
+    result = sheet.values().get(spreadsheetId=config.INVENTORY_SHEET_ID, range="A1:3", majorDimension = "COLUMNS").execute()
     values = result.get('values', [])
     values = list(map(lambda x: [x[0], int(x[1]), int(x[2])], values[1:]))
 
@@ -54,7 +54,7 @@ def import_users():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["kayttajat"], range="A1:D", majorDimension = "ROWS").execute()
+    result = sheet.values().get(spreadsheetId=config.USERS_SHEET_ID, range="A1:D", majorDimension = "ROWS").execute()
     values = result.get('values', [])
     values = list(map(lambda x: [x[0], x[1], x[2], int(x[3])], values))
 
@@ -73,7 +73,7 @@ def import_transactions():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:F").execute()["values"]
+    result = sheet.values().get(spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:F").execute()["values"]
     print(result[:10])
     values = list(map(lambda x: (int(x[1]), x[3], x[5], int(float(x[4]))), result[1:]))
     print(values[:10])
@@ -101,7 +101,7 @@ def export_inventory():
     body = {"values": values}
 
     result = service.spreadsheets().values().append(
-        spreadsheetId=settings.secrets["sheets"]["tuotteet"], range="A1:A",
+        spreadsheetId=config.INVENTORY_SHEET_ID, range="A1:A",
         valueInputOption="RAW", body=body).execute()
 
 
@@ -123,7 +123,7 @@ def export_users():
       }
     })
 
-    sheets = sheet.get(spreadsheetId=settings.secrets["sheets"]["kayttajat"]).execute()["sheets"]
+    sheets = sheet.get(spreadsheetId=config.USERS_SHEET_ID).execute()["sheets"]
     horizon = (datetime.datetime.today() - datetime.timedelta(days = 30)).isoformat()
 
     for i in sheets:
@@ -134,11 +134,11 @@ def export_users():
     body = {"values": users}
 
     response = service.spreadsheets().batchUpdate(
-    spreadsheetId=settings.secrets["sheets"]["kayttajat"],
+    spreadsheetId=config.USERS_SHEET_ID,
     body=add_body).execute()
 
     result = service.spreadsheets().values().append(
-    spreadsheetId=settings.secrets["sheets"]["kayttajat"], range= date + "!A1",
+    spreadsheetId=config.USERS_SHEET_ID, range= date + "!A1",
     valueInputOption="RAW", body=body).execute()
 
     return len(users)
@@ -147,7 +147,7 @@ def export_transactions():
     service = build('sheets', 'v4', credentials=creds)
 
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:F").execute()
+    result = sheet.values().get(spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:F").execute()
     values = result.get('values', [])
 
     end = "2019-01-01"
@@ -161,51 +161,51 @@ def export_transactions():
     body = {"values": mapped}
 
     result = service.spreadsheets().values().append(
-        spreadsheetId=settings.secrets["sheets"]["tapahtumat"], range="A1:A",
+        spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:A",
         valueInputOption="RAW", body=body).execute()
 
     return len(trans)
 
-def get_secrets(env):
-    sheet_id = settings.settings["config_drive"]
-    service = build('sheets', 'v4', credentials=creds)
-
-    sheet = service.spreadsheets()
-
-    admins = sheet.values().get(spreadsheetId=sheet_id, range="Admins!A1:Z").execute()["values"]
-
-    admin_dict = {}
-    for i in admins[1:]:
-        admin_dict[i[0]] = {"sales_report": int(i[3]), "backup_report": int(i[4])}
-
-    chats = sheet.values().get(spreadsheetId=sheet_id, range="Chats!A1:Z").execute()["values"]
-
-    chat_dict = {}
-
-    for i in chats[1:]:
-        if i[1] == env:
-            chat_dict[i[0].replace("−", "-")] = {"messages": int(i[2]), "daily_report": int(i[3]), "backup_report": int(i[4])}
-
-    counter = 0
-    for i in chat_dict:
-        counter += chat_dict[i]["messages"]
-
-    assert counter < 2, "Valitse Driven Config-sheetissä vain yksi chätti, johon viestejä välitetään tässä ympäristössä."
-
-    bots = sheet.values().get(spreadsheetId=sheet_id, range="Bots!A1:Z").execute()["values"]
-    for i in bots[1:]:
-        if i[1] == env:
-            bot_token = i[0]
-
-    sheets_dict = {}
-    sheets = sheet.values().get(spreadsheetId=sheet_id, range="Sheets!A1:Z").execute()["values"]
-    for i in sheets[1:]:
-        if i[1] == env:
-            sheets_dict[i[2]] = i[0]
-
-    secrets = {"admins": admin_dict, "chats": chat_dict, "bot_token": bot_token, "sheets": sheets_dict}
-
-    return secrets
+#def get_secrets(env):
+#    sheet_id = settings.settings["config_drive"]
+#    service = build('sheets', 'v4', credentials=creds)
+#
+#    sheet = service.spreadsheets()
+#
+#    admins = sheet.values().get(spreadsheetId=sheet_id, range="Admins!A1:Z").execute()["values"]
+#
+#    admin_dict = {}
+#    for i in admins[1:]:
+#        admin_dict[i[0]] = {"sales_report": int(i[3]), "backup_report": int(i[4])}
+#
+#    chats = sheet.values().get(spreadsheetId=sheet_id, range="Chats!A1:Z").execute()["values"]
+#
+#    chat_dict = {}
+#
+#    for i in chats[1:]:
+#        if i[1] == env:
+#            chat_dict[i[0].replace("−", "-")] = {"messages": int(i[2]), "daily_report": int(i[3]), "backup_report": int(i[4])}
+#
+#    counter = 0
+#    for i in chat_dict:
+#        counter += chat_dict[i]["messages"]
+#
+#    assert counter < 2, "Valitse Driven Config-sheetissä vain yksi chätti, johon viestejä välitetään tässä ympäristössä."
+#
+#    bots = sheet.values().get(spreadsheetId=sheet_id, range="Bots!A1:Z").execute()["values"]
+#    for i in bots[1:]:
+#        if i[1] == env:
+#            bot_token = i[0]
+#
+#    sheets_dict = {}
+#    sheets = sheet.values().get(spreadsheetId=sheet_id, range="Sheets!A1:Z").execute()["values"]
+#    for i in sheets[1:]:
+#        if i[1] == env:
+#            sheets_dict[i[2]] = i[0]
+#
+#    secrets = {"admins": admin_dict, "chats": chat_dict, "bot_token": bot_token, "sheets": sheets_dict}
+#
+#    return secrets
 
 
 def main():

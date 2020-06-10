@@ -12,15 +12,14 @@ import os
 from telegram.error import BadRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-# TODO consider moving url to some conf file
+import config
 
 
 def get_posts_after(time):
     """
     Get posts from Fiirumi that are created after the given time in UTC.
     """
-    url = "https://fiirumi.fyysikkokilta.fi/posts.json"
-    res = requests.get(url)
+    res = requests.get(config.FIIRUMI_BASE_URL+"/posts.json")
     data = json.loads(res.text)
 
     posts = [x for x in data["latest_posts"] if x["created_at"] > time]
@@ -99,8 +98,6 @@ def format_message(post):
 
     global data
 
-    base_url = "https://fiirumi.fyysikkokilta.fi/t/"
-
     user = [x for x in data["users"] if x["username"] == post["username"]]
 
     emojis = None
@@ -114,7 +111,7 @@ def format_message(post):
     post_type = "vastaus" if post["post_number"] > 1 else "postaus"
 
     text = "Uusi {} Φrumilla!\n\n *{}*\n _{}_ ({}) \n\n[Lue koko postaus]({})"
-    text = text.format(post_type, post["topic_title"], post["name"], post["username"].replace("_", "\_"),  base_url + post["topic_slug"])
+    text = text.format(post_type, post["topic_title"], post["name"], post["username"].replace("_", "\_"),  config.FIIRUMI_BASE_URL+"/t/"+post["topic_slug"])
 
     return text
 

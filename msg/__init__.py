@@ -2,7 +2,10 @@
 A file that contains all the messaging functionalities of Kiltisbot.
 """
 
-import settings
+import config
+
+# TODO sending non supported message type logs warning
+# "'NoneType' object has no attribute 'message_id'"
 
 sent_messages = {}
 
@@ -12,15 +15,18 @@ with open("ohje.txt", "r") as f:
 with open("ohje_en.txt", "r") as f:
     manual_en = f.read()
 
+
 def ohje(bot, update):
     """Send help"""
 
     bot.send_message(update.effective_chat.id, manual, parse_mode = "HTML")
 
+
 def ohje_in_english(bot, update):
     """Send help"""
 
     bot.send_message(update.effective_chat.id, manual_en, parse_mode = "HTML")
+
 
 def robust_send_message(bot, msg, to, reply_id):
     """A robust method for forwarding different types of messages anonymously"""
@@ -50,15 +56,14 @@ def robust_send_message(bot, msg, to, reply_id):
 
     return sent
 
+
 def send_from_private(bot, update):
     """Forward a private message sent for the bot to the receiving chat anonumously"""
 
     msg = update.effective_message
+    sent_message = robust_send_message(bot, msg, config.MESSAGING_CHAT, None)
+    sent_messages[sent_message.message_id] = (msg.chat.id, msg.message_id)
 
-    for i in settings.secrets["chats"]:
-        if settings.secrets["chats"][i]["messages"]:
-            sent_message = robust_send_message(bot, msg, int(i), None)
-            sent_messages[sent_message.message_id] = (msg.chat.id, msg.message_id)
 
 def reply(bot, update):
     """Forward reply from receiving chat back to the original sender"""

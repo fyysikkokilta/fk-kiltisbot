@@ -15,11 +15,9 @@ from telegram.ext import (Updater, InlineQueryHandler, CommandHandler, ChosenInl
 import datetime
 import db
 import math
-import settings
 import fiirumi
+import config
 
-#if settings.settings["drive_backend"]:
-#    import drive
 
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
@@ -345,9 +343,8 @@ def backup(bot, context):
     transactions = db.drive.export_transactions()
     db.drive.export_inventory()
 
-    for i in settings.secrets["chats"]:
-        if settings.secrets["chats"][i]["backup_report"]:
-            bot.send_message(i, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
+    bot.send_message(config.ADMIN_CHAT, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
+
 
 def kulutus(bot, context):
     """Prints the daily tab events to the group chat."""
@@ -358,9 +355,7 @@ def kulutus(bot, context):
     for i in tuotteet:
         text += "{:_<18.18}{:2d} kpl\n".format(i[0].strip() + " ", i[1])
 
-    for i in settings.secrets["chats"]:
-        if settings.secrets["chats"][i]["daily_report"]:
-            bot.send_message(i, text + "```", parse_mode="MARKDOWN")
+    bot.send_message(config.ADMIN_CHAT, text + "```", parse_mode="MARKDOWN")
 
 
 def velo(bot, update):
@@ -423,10 +418,9 @@ def is_registered(bot, update):
 def is_admin(bot, update):
     """Check if user is admin."""
 
-    if str(update.effective_user.id) in settings.secrets["admins"].keys():
+    if update.effective_user.id in config.BOT_ADMINS:
         return True
     else:
-        print(settings.secrets["admins"].keys())
         bot.send_message(update.message.chat.id, "You are not authorized.")
         return False
 

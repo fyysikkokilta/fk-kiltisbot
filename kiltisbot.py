@@ -15,9 +15,12 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler, JobQueue
 
 import logging
-
-import settings
 import fiirumi
+import config
+import db
+import piikki
+import fkcal
+import msg
 
 
 env = None
@@ -26,23 +29,6 @@ if len(sys.argv) == 1:
     env = "PROD"
 else:
     env = sys.argv[1]
-
-
-settings.init_secrets(env)
-#settings.init_settings()
-
-if settings.settings["store"]:
-    import db
-    import piikki
-    #import analytics
-
-if settings.settings["calendar"]:
-    import fkcal
-
-if settings.settings["messaging"]:
-    import msg
-
-
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN= range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
@@ -54,8 +40,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 updater = None
-
-BOT_TOKEN = settings.secrets["bot_token"]
 
 
 def start(bot, update):
@@ -114,7 +98,7 @@ def whoami(bot, update):
 def main():
 
     global updater, saldo_sanat
-    updater = Updater(token = BOT_TOKEN)
+    updater = Updater(token = config.BOT_TOKEN)
 
     flush_messages(updater.bot)
 
@@ -131,55 +115,44 @@ def main():
     dp.add_handler(CommandHandler("messaging_instructions",   msg.ohje_in_english, Filters.private))
     dp.add_handler(CommandHandler("subscribe",     fiirumi.subscribe))
 
-    if settings.settings["store"]:
-        #handlers related to the store feature
+    #handlers related to the store feature
+    jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
+    jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=60)
 
-        jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
-        jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=60)
+    dp.add_handler(piikki.saldo_handler)
+    dp.add_handler(piikki.poisto_handler)
+    dp.add_handler(piikki.register_handler)
 
-        dp.add_handler(piikki.saldo_handler)
-        dp.add_handler(piikki.poisto_handler)
-        dp.add_handler(piikki.register_handler)
+    dp.add_handler(CommandHandler("kauppa",        piikki.store, Filters.private))
+    dp.add_handler(CommandHandler("kirjaudu",      piikki.rekisteroidy, Filters.private))
+    dp.add_handler(CommandHandler("commands",      piikki.commands, Filters.private))
+    dp.add_handler(CommandHandler("hinnasto",      piikki.hinnasto, Filters.private))
+    dp.add_handler(CommandHandler("komennot",      piikki.komennot, Filters.private))
+    dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
+    dp.add_handler(CommandHandler("candy_store",   piikki.ohje_in_english, Filters.private))
+    dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
+    dp.add_handler(CommandHandler("kulutus",       piikki.analytics.send_histogram, Filters.private))
+    dp.add_handler(CommandHandler("velo",          piikki.velo, Filters.private))
+    dp.add_handler(CallbackQueryHandler(piikki.button))
 
-        dp.add_handler(CommandHandler("kauppa",        piikki.store, Filters.private))
-        dp.add_handler(CommandHandler("kirjaudu",      piikki.rekisteroidy, Filters.private))
-        dp.add_handler(CommandHandler("commands",      piikki.commands, Filters.private))
-        dp.add_handler(CommandHandler("hinnasto",      piikki.hinnasto, Filters.private))
-        dp.add_handler(CommandHandler("komennot",      piikki.komennot, Filters.private))
-        dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
-        dp.add_handler(CommandHandler("candy_store",   piikki.ohje_in_english, Filters.private))
-        dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
-        dp.add_handler(CommandHandler("kulutus",       piikki.analytics.send_histogram, Filters.private))
-        dp.add_handler(CommandHandler("velo",          piikki.velo, Filters.private))
-        dp.add_handler(CallbackQueryHandler(piikki.button))
+    #handlers for the drive backend
+    jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
+    dp.add_handler(CommandHandler("export_users",        piikki.export_users, Filters.private))
+    dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
+    dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
+    dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
+    dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
+    dp.add_handler(CommandHandler("import_transactions", piikki.import_transactions, Filters.private))
 
-    if settings.settings["drive_backend"]:
-        #handlers for the drive backend
+    #handlers for the calendar feature
+    dp.add_handler(CommandHandler("tapahtumat",    fkcal.tapahtumat))
+    dp.add_handler(CommandHandler("tanaan",        fkcal.tanaan_command))
+    dp.add_handler(MessageHandler(Filters.text, fkcal.tanaan_text))
 
-        jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
-        dp.add_handler(CommandHandler("export_users",        piikki.export_users, Filters.private))
-        dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
-        dp.add_handler(CommandHandler("export_inventory",    piikki.export_inventory, Filters.private))
-        dp.add_handler(CommandHandler("import_inventory",    piikki.import_inventory, Filters.private))
-        dp.add_handler(CommandHandler("import_users",        piikki.import_users, Filters.private))
-        dp.add_handler(CommandHandler("import_transactions", piikki.import_transactions, Filters.private))
+    #handlers for the messaging functionality
+    dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
+    dp.add_handler(MessageHandler(Filters.reply, msg.reply))
 
-    if settings.settings["calendar"]:
-        #handlers for the calendar feature
-
-        dp.add_handler(CommandHandler("tapahtumat",    fkcal.tapahtumat))
-        dp.add_handler(CommandHandler("tanaan",        fkcal.tanaan_command))
-
-    if settings.settings["messaging"]:
-        #handlers for the messaging functionality
-
-        dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
-        dp.add_handler(MessageHandler(Filters.reply, msg.reply))
-
-    if settings.settings["calendar"]:
-        #handler tanaan feature
-
-        dp.add_handler(MessageHandler(Filters.text, fkcal.tanaan_text))
 
     dp.add_error_handler(error)
 
