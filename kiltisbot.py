@@ -34,7 +34,7 @@ settings.init_secrets(env)
 if settings.settings["store"]:
     import db
     import piikki
-    import analytics
+    #import analytics
 
 if settings.settings["calendar"]:
     import fkcal
@@ -149,7 +149,7 @@ def main():
         dp.add_handler(CommandHandler("piikki_ohje",   piikki.ohje, Filters.private))
         dp.add_handler(CommandHandler("candy_store",   piikki.ohje_in_english, Filters.private))
         dp.add_handler(CommandHandler("lopeta",        piikki.ei_lopetettavaa, Filters.private))
-        dp.add_handler(CommandHandler("kulutus",       analytics.send_histogram, Filters.private))
+        dp.add_handler(CommandHandler("kulutus",       piikki.analytics.send_histogram, Filters.private))
         dp.add_handler(CommandHandler("velo",          piikki.velo, Filters.private))
         dp.add_handler(CallbackQueryHandler(piikki.button))
 

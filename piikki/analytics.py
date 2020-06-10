@@ -3,11 +3,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import timedelta, datetime
 
+# TODO if user has no transaction history command crashes with 'DataFrame' object has no attribute 'tuote' caption text.
 
 def get_data():
     """Returns dataframe with all purchase data"""
 
-    conn = sqlite3.connect("kiltis_PROD.db")
+    conn = sqlite3.connect("kiltis.db")
     sql = f"SELECT * FROM transactions"
     data = pd.read_sql(sql, conn)
     return data[(data.tuote != "NOSTO") & (data.tuote != "PANO")]

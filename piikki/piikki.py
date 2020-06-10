@@ -18,8 +18,8 @@ import math
 import settings
 import fiirumi
 
-if settings.settings["drive_backend"]:
-    import drive
+#if settings.settings["drive_backend"]:
+#    import drive
 
 with open("piikki_ohje.txt", "r") as f:
     ohje_teksti = f.read()
@@ -295,34 +295,34 @@ def export_users(bot, update):
     """Export users to Google sheets."""
 
     if is_admin(bot, update):
-        users = drive.export_users()
+        users = db.drive.export_users()
         bot.send_message(update.message.chat.id, "Käyttäjien vieminen onnistui!\n\n{} käyttäjää yhteensä.".format(users))
 
 def export_transactions(bot, update):
     """Export sales events to Google sheets."""
 
     if is_admin(bot, update):
-        trans = drive.export_transactions()
+        trans = db.drive.export_transactions()
         bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!\n\n{} uutta tapahtumaa.".format(trans))
 
 def export_inventory(bot, update):
     """Exports current inventory to google sheets."""
     if is_admin(bot, update):
-        drive.export_inventory()
+        db.drive.export_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden vieminen onnistui!")
 
 def import_inventory(bot, update):
     """Import inventory from Google sheets."""
 
     if is_admin(bot, update):
-        items = drive.import_inventory()
+        items = db.drive.import_inventory()
         bot.send_message(update.message.chat.id, "Tuotteiden tuominen onnistui!\n\n{} tuotetta yhteensä.".format(items) )
 
 def import_users(bot, update):
     """Import users from Google Sheets. BE CAREFUL WHEN USING THIS. THIS WILL OWERWIRTE YOUR DATABASE!"""
 
     if is_admin(bot, update):
-        delta = drive.import_users()
+        delta = db.drive.import_users()
         message = "Käyttäjiä lisätty {}".format(delta) if delta >= 0 else "Käyttäjiä poistettu {}".format(abs(delta))
         bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
 
@@ -333,7 +333,7 @@ def import_transactions(bot, update):
     export_transactions(bot, update)
 
     if is_admin(bot, update):
-        delta = drive.import_transactions()
+        delta = db.drive.import_transactions()
         message = "Tapahtumia tuotu {}".format(delta)
         bot.send_message(update.message.chat.id, "Tapahtumien tuominen onnistui! \n\n" + message)
 
@@ -341,9 +341,9 @@ def import_transactions(bot, update):
 def backup(bot, context):
     """Backs up all the things to Google sheets."""
 
-    users = drive.export_users()
-    transactions = drive.export_transactions()
-    drive.export_inventory()
+    users = db.drive.export_users()
+    transactions = db.drive.export_transactions()
+    db.drive.export_inventory()
 
     for i in settings.secrets["chats"]:
         if settings.secrets["chats"][i]["backup_report"]:
