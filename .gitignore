@@ -1,5 +1,6 @@
 env
 config.py
+fiirumi_data.json
 *.pyc
 credentials.json
 creds.json
