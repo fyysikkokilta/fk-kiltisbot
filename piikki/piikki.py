@@ -15,16 +15,12 @@ import config
 import db
 import db.drive
 import fiirumi
+from strings import STOKE_INSTRUCTIONS_MSG, STOKE_INSTRUCTIONS_IN_ENGLISH_MSG, TERMS_OF_USE_MSG
 
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
 
-with open("piikki_ohje.txt", "r") as f:
-    ohje_teksti = f.read()
-
-with open("piikki_ohje_en.txt", "r") as f:
-    ohje_teksti_en = f.read()
 
 def store(bot, update):
     """Handles the "kauppa" commad for the bot. Prints the products as buttons that can be used to buy products."""
@@ -94,11 +90,7 @@ def rekisteroidy(bot, update):
 
         keyboard = [["Kyllä"], ["Ei"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard = True)
-
-        with open("ehdot.txt", "r") as f:
-            ehdot = f.read()
-
-        update.message.reply_text(ehdot, reply_markup=reply_markup, parse_mode = "HTML")
+        update.message.reply_text(TERMS_OF_USE_MSG, reply_markup=reply_markup, parse_mode = "HTML")
 
     return HYVAKSYN
 
@@ -279,16 +271,12 @@ def hinnasto(bot, update):
 
 
 def ohje(bot, update):
-    """Prints the manual for using the store."""
+    bot.send_message(update.effective_user.id, STOKE_INSTRUCTIONS_MSG, parse_mode = "HTML")
 
-    global ohje_teksti
-    bot.send_message(update.effective_user.id, ohje_teksti, parse_mode = "HTML")
 
 def ohje_in_english(bot, update):
-    """Prints the manual for using the store."""
+    bot.send_message(update.effective_user.id, STOKE_INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode = "HTML")
 
-    global ohje_teksti_en
-    bot.send_message(update.effective_user.id, ohje_teksti_en, parse_mode = "HTML")
 
 def export_users(bot, update):
     """Export users to Google sheets."""

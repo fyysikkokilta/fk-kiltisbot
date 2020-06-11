@@ -3,29 +3,20 @@ A file that contains all the messaging functionalities of Kiltisbot.
 """
 
 import config
+from strings import INSTRUCTIONS_MSG, INSTRUCTIONS_IN_ENGLISH_MSG
 
 # TODO sending non supported message type logs warning
 # "'NoneType' object has no attribute 'message_id'"
 
 sent_messages = {}
 
-with open("ohje.txt", "r") as f:
-    manual = f.read()
-
-with open("ohje_en.txt", "r") as f:
-    manual_en = f.read()
-
 
 def ohje(bot, update):
-    """Send help"""
-
-    bot.send_message(update.effective_chat.id, manual, parse_mode = "HTML")
+    bot.send_message(update.effective_chat.id, INSTRUCTIONS_MSG, parse_mode = "HTML")
 
 
 def ohje_in_english(bot, update):
-    """Send help"""
-
-    bot.send_message(update.effective_chat.id, manual_en, parse_mode = "HTML")
+    bot.send_message(update.effective_chat.id, INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode = "HTML")
 
 
 def robust_send_message(bot, msg, to, reply_id):
