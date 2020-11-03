@@ -340,46 +340,6 @@ def velo(update, context):
             context.bot.send_photo(i[0], open("img/velat.jpg", "rb"))
 
 
-def komennot(bot, update):
-    """Lists the commands usable by the regular user."""
-    if is_registered(bot, update):
-        bot.send_message(update.message.chat.id,
-        """Komennot:
-/piikki_ohje Ohje kaupan käyttöön.
-/kauppa Osta asioita piikilläsi.
-/hinnasto Tulosta tuotteiden hinnat.
-/saldo Tarkista piikkisi arvo ja lisää ja poista rahaa.
-/poista_edellinen Poista viimeisin tapahtuma.
-""")
-
-def commands(bot, update):
-    """Lists the commands usable by an admin."""
-    if is_admin(bot, update):
-        bot.send_message(update.message.chat.id,
-        """Komennot:
-Viestittely:
-/help
-/tapahtumat
-/tanaan
-/kuva
-
-Käyttäjät:
-/kirjaudu
-/piikki_ohje
-/saldo
-/poista_edellinen
-/kauppa
-/hinnasto
-
-Admin:
-/velo
-/export_users
-/export_transactions
-/export_inventory
-/import_inventory
-""")
-
-
 def is_registered(bot, update):
     """Check if user is registered."""
     user = update.effective_user
