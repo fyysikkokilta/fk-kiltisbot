@@ -38,7 +38,7 @@ def get_events():
     return all_calendar_events
 
 
-def tapahtumat(bot, update):
+def tapahtumat(update, context):
     """Return all_calendar_events events in all_calendar_events calendars."""
 
     text = ""
@@ -50,7 +50,7 @@ def tapahtumat(bot, update):
                 text += f"{event[0]}\n"
             else:
                 text += f"{'.'.join(event[0].split('-')[::-1])} [{event[1]}]({event[2]})\n"
-    bot.send_message(update.effective_chat.id, text, parse_mode="MARKDOWN")
+    context.bot.send_message(update.effective_chat.id, text, parse_mode="MARKDOWN")
 
 
 def tapahtumat_tanaan():
@@ -65,7 +65,7 @@ def tapahtumat_tanaan():
     return out
 
 
-def tanaan_command(bot, update):
+def tanaan_command(update, context):
     """Send message containing list of todays events."""
 
     text = ""
@@ -75,10 +75,10 @@ def tanaan_command(bot, update):
         text = "<b>TÄNÄÄN:</b>\n" + events_parsed.join()
     else:
         text = "<b>TÄNÄÄN</b> ei ole tapahtumia"
-    bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
+    context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
 
 
-def tanaan_text(bot, update):
+def tanaan_text(update, context):
     """Reacts to chat messages containing string "tänään" if there are events today
     by sending list of events today."""
 
@@ -87,4 +87,4 @@ def tanaan_text(bot, update):
         text = ""
         events_parsed = [f"<a href=\"{event[2]}\">{event[1]}</a>\n" for event in events]
         text = "<b>TÄNÄÄN:</b>\n" + events_parsed.join()
-        bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
+        context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")

@@ -11,12 +11,12 @@ from strings import INSTRUCTIONS_MSG, INSTRUCTIONS_IN_ENGLISH_MSG
 sent_messages = {}
 
 
-def ohje(bot, update):
-    bot.send_message(update.effective_chat.id, INSTRUCTIONS_MSG, parse_mode = "HTML")
+def ohje(update, context):
+    context.bot.send_message(update.effective_chat.id, INSTRUCTIONS_MSG, parse_mode = "HTML")
 
 
-def ohje_in_english(bot, update):
-    bot.send_message(update.effective_chat.id, INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode = "HTML")
+def ohje_in_english(update, context):
+    context.bot.send_message(update.effective_chat.id, INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode = "HTML")
 
 
 def robust_send_message(bot, msg, to, reply_id):
@@ -48,18 +48,18 @@ def robust_send_message(bot, msg, to, reply_id):
     return sent
 
 
-def send_from_private(bot, update):
+def send_from_private(update, context):
     """Forward a private message sent for the bot to the receiving chat anonumously"""
 
     msg = update.effective_message
-    sent_message = robust_send_message(bot, msg, config.MESSAGING_CHAT, None)
+    sent_message = robust_send_message(context.bot, msg, config.MESSAGING_CHAT, None)
     sent_messages[sent_message.message_id] = (msg.chat.id, msg.message_id)
 
 
-def reply(bot, update):
+def reply(update, context):
     """Forward reply from receiving chat back to the original sender"""
 
     id = update.effective_message.reply_to_message.message_id
     if id in sent_messages:
         org = sent_messages[id]
-        robust_send_message(bot, update.effective_message, org[0], org[1])
+        robust_send_message(context.bot, update.effective_message, org[0], org[1])

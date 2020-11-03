@@ -28,18 +28,14 @@ def get_posts_after(time):
 
     return posts
 
-def check_messages(bot, update):
+def check_messages(update, context):
 
     global keyboard
     global data
-
     lorina_id = 7
-
     data = load_data()
-
     posts = get_posts_after(data["previous_messages"])
     data["previous_messages"] = datetime.datetime.utcnow().isoformat()
-
     for p in posts:
         for c in data["chats"]:
             msg = format_message(p)
@@ -47,13 +43,10 @@ def check_messages(bot, update):
                 text = format_message(p)
                 print("{} {}".format(c["id"], c["name"]))
                 try:
-                    msg = bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
+                    msg = context.bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
                     data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
                 except BadRequest:
-
                     print("Sending message {} to {} failed.".format(text, c["name"]))
-
-
     save_data(data)
 
 def vote_message(bot, update):
@@ -133,7 +126,7 @@ def update_keyboard(keyboard, emoji, diff):
 
     return keyboard
 
-def subscribe(bot, update):
+def subscribe(update, context):
 
     global data
     data = load_data()
@@ -141,7 +134,7 @@ def subscribe(bot, update):
     if update.effective_chat.id not in chats:
         data["chats"].append({"name": update.effective_chat.title, "id": update.effective_chat.id})
         save_data(data)
-        bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
+        context.bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
 
 
 def load_data():

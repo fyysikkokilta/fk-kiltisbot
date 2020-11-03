@@ -19,17 +19,17 @@ import utils
 from strings import START_MSG, HELP_MSG, HELP_IN_ENGLISH_MSG
 
 
-def start(bot, update):
+def start(update, context):
     """First message users see after they press /start."""
 
     update.message.reply_text(START_MSG)
 
 
-def help_message(bot, update):
+def help_message(update, context):
     update.message.reply_text(HELP_MSG)
 
 
-def help_message_in_english(bot, update):
+def help_message_in_english(update, context):
     update.message.reply_text(HELP_IN_ENGLISH_MSG)
 
 
@@ -68,9 +68,9 @@ def main():
     dp.add_handler(CommandHandler("whoami", utils.whoami))
 
     # These take care of all "button interactions" with bot.
+    dp.add_handler(piikki.register_handler)
     dp.add_handler(piikki.saldo_handler)
     dp.add_handler(piikki.poisto_handler)
-    dp.add_handler(piikki.register_handler)
     dp.add_handler(CallbackQueryHandler(piikki.button))
 
     # Sending messages to bot & react to "tänään" string. Order matters here.

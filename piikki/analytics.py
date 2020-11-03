@@ -65,7 +65,7 @@ Viimeiset kaksi viikkoa:
 { chr(10).join(x for x in data_user[recent_purchases].tuote.values) }"""
 
 
-def send_histogram(bot, update):
+def send_histogram(update, context):
     """Sends histogram of consumption data to user with caption"""
 
     uid = update.message.chat.id
@@ -73,4 +73,4 @@ def send_histogram(bot, update):
     data_user = data[data.user == uid]
     caption = caption_text(data, data_user, uid)
     plot_histogram(data_user, uid)
-    bot.send_photo(uid, open(f"{uid}.png", "rb"), caption=caption)
+    context.bot.send_photo(uid, open(f"{uid}.png", "rb"), caption=caption)
