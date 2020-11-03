@@ -34,4 +34,4 @@ GOOGLE_CALENDARS = {
 }
 
 # Base URL to to fiirumi.
-FIIRUMI_POSTS_URL = "https://fiirumi.fyysikkokilta.fi/posts.json"
+FIIRUMI_POSTS_URL = "https://fiirumi.fyysikkokilta.fi"
