@@ -41,12 +41,12 @@ def past_two_weeks(ts):
     return datetime.strptime(ts[:10], "%Y-%m-%d") > today - dt
 
 
+# TODO reverse order of products in caption.
 def caption_text(data, data_user, uid):
     """Returns caption text that contains aggregate figures"""
 
     purchases = len(data_user)
     cost = data_user.hinta.sum()/100
-
     # make sure there is data before doing calculations
     if purchases != 0:
         rank = list(data.user.value_counts().values).index(len(data_user))+1
@@ -54,7 +54,6 @@ def caption_text(data, data_user, uid):
     else:
         rank = "NaN"
         y, m, d = "x", "x", "x"
-
     recent_purchases = [past_two_weeks(x) for x in data_user.aika.values]
     # hack to allow new line inside f string on last line
     return f""" Alkaen {d}.{m}.{y}
