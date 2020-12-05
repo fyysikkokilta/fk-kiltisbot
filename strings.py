@@ -85,10 +85,7 @@ Täällä voit tehdä ostoksia. Kun painat näytöllä olevaa tuotenappulaa, vä
 Täällä voit tarkastella tarjontaa myös listamuodossa.
 
 /poista_edellinen
-Jos sinulle käy virhe käyttäessäsi bottia, voit peruuttaa edellisen toimintosi tällä komennolla. Komento toimii ostosten lisäksi myös saldon muutoksiin. Voit toistaa tapahtuman tarvittaessa useaan kertaan ja iteroida virheitäsi taaksepäin niin pitkään kuin on tarvis.
-
-/komennot
-Tällä tulostat lyhyemmän listauksen eri komennoista."""
+Jos sinulle käy virhe käyttäessäsi bottia, voit peruuttaa edellisen toimintosi tällä komennolla. Komento toimii ostosten lisäksi myös saldon muutoksiin. Voit toistaa tapahtuman tarvittaessa useaan kertaan ja iteroida virheitäsi taaksepäin niin pitkään kuin on tarvis."""
 
 
 STOKE_INSTRUCTIONS_IN_ENGLISH_MSG = """<b>Digital candy store</b>
@@ -108,10 +105,7 @@ Here you can buy goodies. When you press product in the screen its price is auto
 Prints a list of all products and their prices.
 
 /poista_edellinen
-Undo previous transaction that changed your balance. These actions can be chained as many times as needed.
-
-/komennot
-Prints list of available commands."""
+Undo previous transaction that changed your balance. These actions can be chained as many times as needed."""
 
 
 
