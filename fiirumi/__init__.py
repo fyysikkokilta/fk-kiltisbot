@@ -28,7 +28,7 @@ def get_posts_after(time):
 
     return posts
 
-def check_messages(update, context):
+def check_messages(context):
 
     global keyboard
     global data

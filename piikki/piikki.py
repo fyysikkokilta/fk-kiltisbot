@@ -309,7 +309,7 @@ def import_transactions(update, context):
         context.bot.send_message(update.message.chat.id, "Tapahtumien tuominen onnistui! \n\n" + message)
 
 
-def backup(update, context):
+def backup(context):
     """Backs up all the things to Google sheets."""
 
     users = db.drive.export_users()
@@ -319,7 +319,7 @@ def backup(update, context):
     context.bot.send_message(config.ADMIN_CHAT, "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions))
 
 
-def kulutus(update, context):
+def kulutus(context):
     """Prints the daily tab events to the group chat."""
 
     eilinen = (datetime.datetime.now() - datetime.timedelta(days = 1)).isoformat()

@@ -1,6 +1,5 @@
 """
 To make kiltisbotti alive run: $ python3 bot.py
-
 """
 
 import datetime
