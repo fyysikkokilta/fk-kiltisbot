@@ -60,7 +60,7 @@ More info about candy store:
 We encourage to experiment with other commands as well."""
 
 
-STOKE_INSTRUCTIONS_MSG = """<b>Sähköinen kiltispiikki</b>
+TAB_INSTRUCTIONS_MSG = """<b>Sähköinen kiltispiikki</b>
 
 Tämä on kiltiksen sähköinen piikkijärjestelmä. Fyysisesti raha ja herkut liikkuvat kuin aina ennekin, mutta tällä botilla on tarkoitus:
 - poistaa turha sekalaisen paperinipun pläräily
@@ -88,7 +88,7 @@ Täällä voit tarkastella tarjontaa myös listamuodossa.
 Jos sinulle käy virhe käyttäessäsi bottia, voit peruuttaa edellisen toimintosi tällä komennolla. Komento toimii ostosten lisäksi myös saldon muutoksiin. Voit toistaa tapahtuman tarvittaessa useaan kertaan ja iteroida virheitäsi taaksepäin niin pitkään kuin on tarvis."""
 
 
-STOKE_INSTRUCTIONS_IN_ENGLISH_MSG = """<b>Digital candy store</b>
+TAB_INSTRUCTIONS_IN_ENGLISH_MSG = """<b>Digital candy store</b>
 
 Purpose of this system is to make the use of the candy closet ("herkkukaappi" in Finnish) in the Guild room easier by replacing old balance sheet paper with an electronic system. In addition it provides accurate consumption data for the Guild room committee to improve assortment of the candy closet. System has following commands:
 

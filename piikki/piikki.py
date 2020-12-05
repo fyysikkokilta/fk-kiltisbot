@@ -15,7 +15,7 @@ import config
 import db
 import db.drive
 import fiirumi
-from strings import STOKE_INSTRUCTIONS_MSG, STOKE_INSTRUCTIONS_IN_ENGLISH_MSG, TERMS_OF_USE_MSG
+from strings import TAB_INSTRUCTIONS_MSG, TAB_INSTRUCTIONS_IN_ENGLISH_MSG, TERMS_OF_USE_MSG
 
 
 ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
@@ -246,11 +246,11 @@ def hinnasto(update, context):
 
 
 def ohje(update, context):
-    context.bot.send_message(update.effective_user.id, STOKE_INSTRUCTIONS_MSG, parse_mode = "HTML")
+    context.bot.send_message(update.effective_user.id, TAB_INSTRUCTIONS_MSG, parse_mode = "HTML")
 
 
 def ohje_in_english(update, context):
-    context.bot.send_message(update.effective_user.id, STOKE_INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode = "HTML")
+    context.bot.send_message(update.effective_user.id, TAB_INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode = "HTML")
 
 
 # TODO can not export twice during the same minute because we would get same sheet name
