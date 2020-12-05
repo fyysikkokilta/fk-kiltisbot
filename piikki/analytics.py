@@ -67,6 +67,7 @@ Viimeiset kaksi viikkoa:
 def send_histogram(update, context):
     """Sends histogram of consumption data to user with caption"""
 
+    # TODO check is user is registered or data is empty of something like that
     uid = update.message.chat.id
     data = get_data()
     data_user = data[data.user == uid]
