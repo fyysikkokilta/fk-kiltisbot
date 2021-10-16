@@ -55,7 +55,7 @@ def import_transactions():
 def export_inventory():
     service = build('sheets', 'v4', credentials=google_auth.creds, cache_discovery=False)
 
-    inventory = list(map(lambda x: str(x[0]), db.get_stocks()))
+    inventory = list(map(lambda x: x[0], db.get_stocks()))
 
     print(inventory)
     values = [[datetime.datetime.today().isoformat()[:16]] + inventory]

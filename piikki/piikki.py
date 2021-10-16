@@ -64,6 +64,7 @@ def button(update, context):
 
     db.add_transaction(user, name, query.data, time, price)
     db.update_balance(user, -price)
+    db.update_stock(query.data, -1)
 
     saldo = db.get_balance(user)
     query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100))
