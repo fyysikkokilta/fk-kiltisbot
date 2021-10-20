@@ -72,7 +72,7 @@ def tanaan_command(update, context):
     events = tapahtumat_tanaan()
     if events:
         events_parsed = [f"<a href=\"{event[2]}\">{event[1]}</a>\n" for event in events]
-        text = "<b>TÄNÄÄN:</b>\n" + events_parsed.join()
+        text = "<b>TÄNÄÄN:</b>\n" + "\n".join(events_parsed)
     else:
         text = "<b>TÄNÄÄN</b> ei ole tapahtumia"
     context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
@@ -86,5 +86,5 @@ def tanaan_text(update, context):
     if events and "tänään" in update.effective_message.text.lower():
         text = ""
         events_parsed = [f"<a href=\"{event[2]}\">{event[1]}</a>\n" for event in events]
-        text = "<b>TÄNÄÄN:</b>\n" + events_parsed.join()
+        text = "<b>TÄNÄÄN:</b>\n" + "\n".join(events_parsed)
         context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
