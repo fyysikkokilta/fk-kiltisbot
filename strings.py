@@ -12,7 +12,7 @@ Botti tallentaa lähettämistäsi viesteistä sinun ja botin kahdenkeskisen kesk
 
 Kiltisbot osaa myös hakea killan tulevat tapahtumat Google-kalenterista, jos kirjoitat /tapahtumat.
 
-Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @Stippos.
+Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @elias_yj.
 
 Muista myös kiltistoimikunnan muut palvelut kuten @TsufeBot.
 
