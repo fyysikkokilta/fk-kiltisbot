@@ -118,7 +118,7 @@ def get_price(c, nimi):
 # TODO consider changing this WHERE clause if maara is removed
 @get
 def get_items(c):
-    return c.execute("SELECT * FROM inventory WHERE maara > 0").fetchall()
+    return c.execute("SELECT * FROM inventory").fetchall()
 
 
 @get
