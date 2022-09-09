@@ -36,18 +36,20 @@ def check_messages(context):
     data = load_data()
     posts = get_posts_after(data["previous_messages"])
     data["previous_messages"] = datetime.datetime.utcnow().isoformat()
-    for p in posts:
-        for c in data["chats"]:
-            msg = format_message(p)
-            if not (p["category_id"] == lorina_id and c["name"] == "Fyysikkokilta"):
-                text = format_message(p)
-                print("{} {}".format(c["id"], c["name"]))
-                try:
-                    msg = context.bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
-                    data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
-                except BadRequest:
-                    print("Sending message {} to {} failed.".format(text, c["name"]))
-    save_data(data)
+    try:
+        for p in posts:
+            for c in data["chats"]:
+                msg = format_message(p)
+                if not (p["category_id"] == lorina_id and c["name"] == "Fyysikkokilta"):
+                    text = format_message(p)
+                    print("{} {}".format(c["id"], c["name"]))
+                    try:
+                        msg = context.bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
+                        data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
+                    except BadRequest:
+                        print("Sending message {} to {} failed.".format(text, c["name"]))
+    finally:
+        save_data(data)
 
 def vote_message(bot, update):
 
