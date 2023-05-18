@@ -216,7 +216,7 @@ def poistatko(update, context):
 
 def poista(update, context):
     """Does the actual removing when user wants to remove their last action."""
-    
+
     if update.message.text == "Kyllä":
         user = update.effective_user.id
         edellinen = db.get_last_transaction(update.effective_user.id)
@@ -271,7 +271,7 @@ def export_transactions(update, context):
         context.bot.send_message(update.message.chat.id, "Tapahtumien vieminen onnistui!\n\n{} uutta tapahtumaa.".format(trans))
 
 
-# TODO exporting invetory to empty sheet doesn't create names row for products in sheet. This 
+# TODO exporting invetory to empty sheet doesn't create names row for products in sheet. This
 # could be fixed same time when maara field is removed from database.
 def export_inventory(update, context):
     """Exports current inventory to google sheets."""
@@ -338,7 +338,7 @@ def velo(update, context):
     if is_admin(context.bot, update):
         velalliset = db.get_velalliset()
         for i in velalliset:
-            context.bot.send_photo(i[0], open("img/velat.jpg", "rb"))
+            context.bot.send_photo(i[0], open("assets/img/velat.jpg", "rb"))
 
 
 def is_registered(bot, update):
@@ -370,7 +370,7 @@ poisto_handler = ConversationHandler(
 )
 
 #ConversationHandler function that handles the conversation for topping up or withdrawing money from account.
-# TODO: now if user inputs /lopeta after she has pressed "lisää" or "nosta" process is terminated with 
+# TODO: now if user inputs /lopeta after she has pressed "lisää" or "nosta" process is terminated with
 # message "Sinulla ei ollut käynnissä toimintoa, jonka voisi lopettaa". More correct would be "Toiminto keskeytetty".
 saldo_handler = ConversationHandler(
     entry_points = [CommandHandler("saldo", saldo, Filters.private)],

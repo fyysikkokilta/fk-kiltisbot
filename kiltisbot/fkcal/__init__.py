@@ -9,7 +9,7 @@ import time
 from googleapiclient.discovery import build
 
 import config
-import google_auth
+from kiltisbot import google_auth
 
 
 def get_events():
@@ -57,7 +57,7 @@ def tapahtumat_tanaan():
     """Return list of events ocurring today."""
 
     events = get_events()
-    tanaan = datetime.datetime.today().isoformat()[:10]
+    tanaan = datetime.datetime.today().isoformat()[:10]  # YYYY-MM-DD
     out = []
     for _, calendar_events in events.items():
         out += [event for event in calendar_events if event[0] == tanaan]

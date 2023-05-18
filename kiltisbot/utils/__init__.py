@@ -17,7 +17,6 @@ logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
 
 def log_error(update, context):
     """Log Errors caused by Updates."""
-
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 

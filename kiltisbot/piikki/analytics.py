@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -74,3 +75,4 @@ def send_histogram(update, context):
     caption = caption_text(data, data_user, uid)
     plot_histogram(data_user, uid)
     context.bot.send_photo(uid, open(f"{uid}.png", "rb"), caption=caption)
+    os.remove(f"{uid}.png")

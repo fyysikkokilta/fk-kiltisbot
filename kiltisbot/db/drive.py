@@ -7,8 +7,7 @@ import datetime
 from googleapiclient.discovery import build
 
 import config
-import db
-import google_auth
+from kiltisbot import db, google_auth
 
 
 def import_inventory():
@@ -25,6 +24,10 @@ def import_inventory():
 
 
 def import_users():
+    """
+    Import users from Google Sheets to database and backups current users to new sheet.
+    (Note that 2 consecutive imports will result in old data being reloaded)
+    """
     service = build('sheets', 'v4', credentials=google_auth.creds, cache_discovery=False)
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=config.USERS_SHEET_ID, range="A1:D", majorDimension = "ROWS").execute()

@@ -9,13 +9,15 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMa
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler, JobQueue
 
 import config
-import db
-import fiirumi
-import fkcal
-import msg
-import piikki
-import utils
-from strings import START_MSG, HELP_MSG, HELP_IN_ENGLISH_MSG
+from kiltisbot import (
+    db,
+    fiirumi,
+    fkcal,
+    msg,
+    piikki,
+    utils,
+)
+from kiltisbot.strings import START_MSG, HELP_MSG, HELP_IN_ENGLISH_MSG
 
 
 def start(update, context):
@@ -78,7 +80,9 @@ def main():
     jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
     jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=60)
 
+    # NOTE: Please comment out this line when wanting tracebacks in error logs.
     dp.add_error_handler(utils.log_error)
+
     updater.start_polling()
     updater.idle()
 
