@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "fk-kiltisbot"
+version = "0.1.0"
+description = "Telegram bot for managing item & account balances, and showing calendar summaries"
+authors = ["Fyysikkokilta ry <it@fyysikkokilta.fi>"]
+readme = "README.md"
+packages = [{include = "kiltisbot"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+APScheduler = '3.6.3'
+google-api-core = '1.23.0'
+google-api-python-client = '1.12.5'
+google-auth = '1.23.0'
+matplotlib = '3.3.2'
+pandas = '1.5.3'
+Pillow = '8.0.1'
+python-telegram-bot = '13.0'
+requests = '2.24.0'
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
