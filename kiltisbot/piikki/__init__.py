@@ -26,9 +26,42 @@ from kiltisbot.piikki.piikki import (
     velo,
     is_registered,
     is_admin,
-
     register_handler,
     poisto_handler,
-    saldo_handler
+    saldo_handler,
 )
 from kiltisbot.piikki import analytics
+
+__all__ = [
+    "store",
+    "button",
+    "rekisteroidy",
+    "hyvaksyn",
+    "saldo",
+    "ohjaa",
+    "lisaa",
+    "nosta",
+    "lopeta",
+    "ei_lopetettavaa",
+    "tuntematon",
+    "poistatko",
+    "poista",
+    "hinnasto",
+    "ohje",
+    "ohje_in_english",
+    "export_users",
+    "export_transactions",
+    "export_inventory",
+    "import_inventory",
+    "import_users",
+    "import_transactions",
+    "backup",
+    "kulutus",
+    "velo",
+    "is_registered",
+    "is_admin",
+    "register_handler",
+    "poisto_handler",
+    "saldo_handler",
+    "analytics"
+]

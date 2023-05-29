@@ -4,12 +4,14 @@ and functions that take cursor to db as first argument."""
 import sqlite3
 from typing import Callable, Concatenate, ParamSpec, TypeVar
 
-# TODO consider removing määrä from item database fields as it is not used and also update_stock and set_stock_0, get_stocks
+# TODO consider removing määrä from item database fields
+# as it is not used and also update_stock and set_stock_0, get_stocks
 
 Param = ParamSpec("Param")
 RetType = TypeVar("RetType")
 OrigFun = Callable[Concatenate[sqlite3.Cursor, Param], RetType]
 DecFun = Callable[Param, RetType]
+
 
 def commit(func: OrigFun) -> DecFun:
     """Decorator that opens and closes database connection for actions that
@@ -21,6 +23,7 @@ def commit(func: OrigFun) -> DecFun:
         func(cursor, *args, **kwargs)
         conn.commit()
         conn.close()
+
     return wrapper
 
 
@@ -35,6 +38,7 @@ def get(func: OrigFun) -> DecFun:
         out = func(cursor, *args, **kwargs)
         conn.close()
         return out
+
     return wrapper
 
 
@@ -42,7 +46,10 @@ def get(func: OrigFun) -> DecFun:
 def initialize_db(c):
     c.execute("CREATE TABLE users (id int, nick text, nimi text, saldo int)")
     c.execute("CREATE TABLE inventory (nimi text, hinta int, maara int)")
-    c.execute("CREATE TABLE transactions (id integer primary key, user int, user_name text, tuote text, hinta int, aika text)")
+    c.execute(
+        "CREATE TABLE transactions (id integer primary key, user int, user_name text,"
+        " tuote text, hinta int, aika text)"
+    )
 
 
 @commit
@@ -52,7 +59,13 @@ def add_user(c: sqlite3.Cursor, id, nick, nimi, saldo):
 
 @commit
 def add_transaction(c, user, name, tuote, aika, hinta):
-    c.execute("INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES (NULL,?,?,?,?,?)", (user, None, tuote, hinta, aika))
+    c.execute(
+        (
+            "INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES"
+            " (NULL,?,?,?,?,?)"
+        ),
+        (user, None, tuote, hinta, aika),
+    )
 
 
 @commit
@@ -83,7 +96,7 @@ def delete_transactions(c):
 
 @commit
 def delete_transaction(c, id):
-    cur = c.execute("DELETE FROM transactions WHERE id = ?", (id,))
+    c.execute("DELETE FROM transactions WHERE id = ?", (id,))
 
 
 @commit
@@ -119,7 +132,10 @@ def get_balance(c, id):
 
 @get
 def get_price(c, nimi):
-    return c.execute("SELECT hinta FROM inventory WHERE nimi=?", (nimi,)).fetchall()[0][0]
+    return c.execute("SELECT hinta FROM inventory WHERE nimi=?", (nimi,)).fetchall()[0][
+        0
+    ]
+
 
 # TODO consider changing this WHERE clause if maara is removed
 @get
@@ -134,7 +150,9 @@ def get_stocks(c):
 
 @get
 def get_last_transaction(c, user):
-    return c.execute("SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (user,)).fetchall()[0]
+    return c.execute(
+        "SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (user,)
+    ).fetchall()[0]
 
 
 @get
@@ -144,7 +162,13 @@ def get_transactions_after(c, time):
 
 @get
 def get_consumption_after(c, time):
-    return c.execute("SELECT tuote, COUNT(tuote) FROM transactions WHERE aika > ? AND NOT tuote='PANO' AND NOT tuote='NOSTO' GROUP BY tuote", (time,)).fetchall()
+    return c.execute(
+        (
+            "SELECT tuote, COUNT(tuote) FROM transactions WHERE aika > ? AND NOT"
+            " tuote='PANO' AND NOT tuote='NOSTO' GROUP BY tuote"
+        ),
+        (time,),
+    ).fetchall()
 
 
 @get
