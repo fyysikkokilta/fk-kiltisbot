@@ -10,7 +10,8 @@ import datetime
 import os
 
 from telegram.error import BadRequest
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from ..utils import CallbackContext
 
 import config
 
@@ -28,8 +29,7 @@ def get_posts_after(time):
 
     return posts
 
-def check_messages(context):
-
+async def check_messages(context: CallbackContext):
     global keyboard
     global data
     lorina_id = 7
@@ -44,15 +44,14 @@ def check_messages(context):
                     text = format_message(p)
                     print("{} {}".format(c["id"], c["name"]))
                     try:
-                        msg = context.bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
+                        msg = await context.bot.send_message(c["id"], text, reply_markup=keyboard, parse_mode="MARKDOWN")
                         data["sent_messages"].append({"username": p["username"], "chat": msg.chat.id, "message": msg.message_id, "voters": {}})
                     except BadRequest:
                         print("Sending message {} to {} failed.".format(text, c["name"]))
     finally:
         save_data(data)
 
-def vote_message(bot, update):
-
+async def vote_message(bot, update):
     global data
     data = load_data()
 
@@ -66,7 +65,7 @@ def vote_message(bot, update):
 
     if not str(sender) in sent_message["voters"].keys():
         sent_message["voters"][str(sender)] = emoji
-        bot.edit_message_reply_markup(
+        await bot.edit_message_reply_markup(
             chat_id = chat,
             message_id = message,
             reply_markup = InlineKeyboardMarkup(update_keyboard(update.effective_message.reply_markup.inline_keyboard, emoji, 1)))
@@ -128,15 +127,15 @@ def update_keyboard(keyboard, emoji, diff):
 
     return keyboard
 
-def subscribe(update, context):
-
+async def subscribe(update: Update, context: CallbackContext):
+    assert update.effective_chat is not None, "Update unexpectedly initiated outside of chat"
     global data
     data = load_data()
     chats = [x["id"] for x in data["chats"]]
     if update.effective_chat.id not in chats:
         data["chats"].append({"name": update.effective_chat.title, "id": update.effective_chat.id})
         save_data(data)
-        context.bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
+        await context.bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
 
 
 def load_data():

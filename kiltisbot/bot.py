@@ -3,10 +3,13 @@ To make kiltisbotti alive run: $ python3 bot.py
 """
 
 import datetime
+import logging
 
-from telegram.utils.helpers import escape_markdown
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
-from telegram.ext import Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Filters, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, RegexHandler, JobQueue
+
+#from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQueryResultArticle, ParseMode, InputTextMessageContent, ChosenInlineResult
+from telegram.ext import Application, Updater, InlineQueryHandler, CommandHandler, ChosenInlineResultHandler, MessageHandler, Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, JobQueue
+from telegram.ext import filters
+from telegram import Bot, Update
 
 import config
 from kiltisbot import (
@@ -18,73 +21,83 @@ from kiltisbot import (
     utils,
 )
 from kiltisbot.strings import START_MSG, HELP_MSG, HELP_IN_ENGLISH_MSG
+from .utils import CallbackContext
 
+logger = logging.getLogger(__name__)
 
-def start(update, context):
+async def start(update: Update, context: CallbackContext):
     """First message users see after they press /start."""
-
-    update.message.reply_text(START_MSG)
-
-
-def help_message(update, context):
-    update.message.reply_text(HELP_MSG)
+    assert update.message is not None, "Update unexpectedly has no message"
+    await update.message.reply_text(START_MSG)
 
 
-def help_message_in_english(update, context):
-    update.message.reply_text(HELP_IN_ENGLISH_MSG)
+async def help_message(update: Update, context: CallbackContext):
+    assert update.message is not None
+    await update.message.reply_text(HELP_MSG)
 
 
-def main():
-    updater = Updater(token = config.BOT_TOKEN)
-    dp = updater.dispatcher
-    jq = updater.job_queue
-    utils.flush_messages(updater.bot)
+async def help_message_in_english(update: Update, context: CallbackContext):
+    assert update.message is not None, "Update unexpectedly has no message"
+    await update.message.reply_text(HELP_IN_ENGLISH_MSG)
+
+async def post_init(app: Application):
+
+#async def main():
+
+    jq = app.job_queue
+    if jq is None:
+        raise Exception("JobQueue is None")
+    await utils.flush_messages(app.bot)
 
     # All command interactions with bot.
     # TODO: more dry way to do this?
-    dp.add_handler(CommandHandler("help", help_message, Filters.private))
-    dp.add_handler(CommandHandler("help_in_english", help_message_in_english, Filters.private))
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("subscribe", fiirumi.subscribe))
-    dp.add_handler(CommandHandler("tapahtumat", fkcal.tapahtumat))
-    dp.add_handler(CommandHandler("tanaan", fkcal.tanaan_command))
-    dp.add_handler(CommandHandler("messaging_instructions", msg.ohje_in_english, Filters.private))
-    dp.add_handler(CommandHandler("viesti_ohje", msg.ohje, Filters.private))
-    dp.add_handler(CommandHandler("candy_store", piikki.ohje_in_english, Filters.private))
-    dp.add_handler(CommandHandler("export_inventory", piikki.export_inventory, Filters.private))
-    dp.add_handler(CommandHandler("export_transactions", piikki.export_transactions, Filters.private))
-    dp.add_handler(CommandHandler("export_users", piikki.export_users, Filters.private))
-    dp.add_handler(CommandHandler("hinnasto", piikki.hinnasto, Filters.private))
-    dp.add_handler(CommandHandler("import_inventory", piikki.import_inventory, Filters.private))
-    dp.add_handler(CommandHandler("import_transactions", piikki.import_transactions, Filters.private))
-    dp.add_handler(CommandHandler("import_users", piikki.import_users, Filters.private))
-    dp.add_handler(CommandHandler("kauppa", piikki.store, Filters.private))
-    dp.add_handler(CommandHandler("kulutus", piikki.analytics.send_histogram, Filters.private))
-    dp.add_handler(CommandHandler("piikki_ohje", piikki.ohje, Filters.private))
-    dp.add_handler(CommandHandler("velo", piikki.velo, Filters.private))
-    dp.add_handler(CommandHandler("whoami", utils.whoami))
+    app.add_handler(CommandHandler("help", help_message, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("help_in_english", help_message_in_english, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("subscribe", fiirumi.subscribe))
+    app.add_handler(CommandHandler("tapahtumat", fkcal.tapahtumat))
+    app.add_handler(CommandHandler("tanaan", fkcal.tanaan_command))
+    app.add_handler(CommandHandler("messaging_instructions", msg.ohje_in_english, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("viesti_ohje", msg.ohje, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("candy_store", piikki.ohje_in_english, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("export_inventory", piikki.export_inventory, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("export_transactions", piikki.export_transactions, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("export_users", piikki.export_users, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("hinnasto", piikki.hinnasto, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("import_inventory", piikki.import_inventory, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("import_transactions", piikki.import_transactions, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("import_users", piikki.import_users, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("kauppa", piikki.store, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("kulutus", piikki.analytics.send_histogram, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("piikki_ohje", piikki.ohje, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("velo", piikki.velo, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("whoami", utils.whoami))
 
     # These take care of all "button interactions" with bot.
-    dp.add_handler(piikki.register_handler)
-    dp.add_handler(piikki.saldo_handler)
-    dp.add_handler(piikki.poisto_handler)
-    dp.add_handler(CallbackQueryHandler(piikki.button))
+    app.add_handler(piikki.register_handler)
+    app.add_handler(piikki.saldo_handler)
+    app.add_handler(piikki.poisto_handler)
+    app.add_handler(CallbackQueryHandler(piikki.button))
 
     # Sending messages to bot & react to "tänään" string. Order matters here.
-    dp.add_handler(MessageHandler(Filters.private, msg.send_from_private))
-    dp.add_handler(MessageHandler(Filters.reply, msg.reply))
-    dp.add_handler(MessageHandler(Filters.text, fkcal.tanaan_text))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE, msg.send_from_private))
+    app.add_handler(MessageHandler(filters.REPLY, msg.reply))
+    app.add_handler(MessageHandler(filters.TEXT, fkcal.tanaan_text))
 
     # Backup, check Fiirumi and report admin chat on given intervals.
-    jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), context = updater.bot, name = "Kulutus")
-    jq.run_daily(piikki.backup, time = datetime.time(7,0,0), context = updater.bot, name = "Backup")
-    jq.run_repeating(fiirumi.check_messages, context=updater.bot, interval=60)
+    jq.run_daily(piikki.kulutus, time = datetime.time(7,0,0), name = "Kulutus", )
+    jq.run_daily(piikki.backup, time = datetime.time(7,0,0), name = "Backup")
+
+    jq.run_repeating(fiirumi.check_messages, interval=5)
+    #jq.run_repeating(piikki.kulutus,interval=10, name = "Kulutus", )
+    #jq.run_repeating(piikki.backup, interval=10, name = "Backup")
 
     # NOTE: Please comment out this line when wanting tracebacks in error logs.
-    dp.add_error_handler(utils.log_error)
+    #app.add_error_handler(utils.log_error)
+    logger.info("Post init done.")
 
-    updater.start_polling()
-    updater.idle()
 
 if __name__ == '__main__':
-    main()
+    app = Application.builder().token(config.BOT_TOKEN).concurrent_updates(False).build()
+    app.post_init = post_init
+    app.run_polling()

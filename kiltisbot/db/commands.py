@@ -2,10 +2,16 @@
 and functions that take cursor to db as first argument."""
 
 import sqlite3
+from typing import Callable, Concatenate, ParamSpec, TypeVar
 
 # TODO consider removing määrä from item database fields as it is not used and also update_stock and set_stock_0, get_stocks
 
-def commit(func):
+Param = ParamSpec("Param")
+RetType = TypeVar("RetType")
+OrigFun = Callable[Concatenate[sqlite3.Cursor, Param], RetType]
+DecFun = Callable[Param, RetType]
+
+def commit(func: OrigFun) -> DecFun:
     """Decorator that opens and closes database connection for actions that
     change something in database. Passes cursor to function as first argument."""
 
@@ -18,7 +24,7 @@ def commit(func):
     return wrapper
 
 
-def get(func):
+def get(func: OrigFun) -> DecFun:
     """Decorator that opens and closes database connection for actions that
     read data from database and returns whatever function returns.
     Passes cursor to function as first argument."""
@@ -40,7 +46,7 @@ def initialize_db(c):
 
 
 @commit
-def add_user(c, id, nick, nimi, saldo):
+def add_user(c: sqlite3.Cursor, id, nick, nimi, saldo):
     c.execute("INSERT INTO users VALUES (?,?,?,?)", (id, nick, nimi, saldo))
 
 

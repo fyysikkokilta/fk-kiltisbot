@@ -4,6 +4,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import timedelta, datetime
 
+from telegram import Update
+from telegram.ext import CallbackContext
+
 # TODO if user has no transaction history command crashes with 'DataFrame' object has no attribute 'tuote' caption text.
 # TODO save images to img folder
 
@@ -65,8 +68,9 @@ Viimeiset kaksi viikkoa:
 { chr(10).join(x for x in data_user[recent_purchases].tuote.values) }"""
 
 
-def send_histogram(update, context):
+async def send_histogram(update: Update, context: CallbackContext):
     """Sends histogram of consumption data to user with caption"""
+    assert update.message is not None, "Update unexpectedly has no message"
 
     # TODO check is user is registered or data is empty of something like that
     uid = update.message.chat.id
