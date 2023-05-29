@@ -15,7 +15,7 @@ from telegram.ext import CallbackContext
 def get_data():
     """Returns dataframe with all purchase data"""
 
-    conn = sqlite3.connect("kiltis.db")
+    conn = sqlite3.connect("data/kiltis.db")
     sql = "SELECT * FROM transactions"
     data = pd.read_sql(sql, conn)
     return data[(data.tuote != "NOSTO") & (data.tuote != "PANO")]

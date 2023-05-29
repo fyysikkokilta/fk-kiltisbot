@@ -18,7 +18,7 @@ def commit(func: OrigFun) -> DecFun:
     change something in database. Passes cursor to function as first argument."""
 
     def wrapper(*args, **kwargs):
-        conn = sqlite3.connect("kiltis.db")
+        conn = sqlite3.connect("data/kiltis.db")
         cursor = conn.cursor()
         func(cursor, *args, **kwargs)
         conn.commit()
@@ -33,7 +33,7 @@ def get(func: OrigFun) -> DecFun:
     Passes cursor to function as first argument."""
 
     def wrapper(*args, **kwargs):
-        conn = sqlite3.connect("kiltis.db")
+        conn = sqlite3.connect("data/kiltis.db")
         cursor = conn.cursor()
         out = func(cursor, *args, **kwargs)
         conn.close()

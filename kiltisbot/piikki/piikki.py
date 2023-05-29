@@ -483,13 +483,13 @@ async def velo(update: Update, context: CbCtx):
             await context.bot.send_photo(i[0], open("assets/img/velat.jpg", "rb"))
 
 
-async def is_registered(bot, update: Update):
+async def is_registered(bot: ExtBot, update: Update):
     """Check if user is registered."""
     user = update.effective_user
     assert user is not None, "Update does not have effective_user"
     if len(db.get_user(user.id)) < 1:
         assert update.message is not None, "Update does not have message"
-        bot.send_message(
+        await bot.send_message(
             update.message.chat.id,
             ("Rekisteröidy käyttääksesi tätä toiminnallisuutta kirjoittamalla" " /kirjaudu."),
         )

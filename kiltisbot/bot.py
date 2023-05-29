@@ -102,8 +102,10 @@ async def post_init(app: Application):
     # app.add_error_handler(utils.log_error)
     logger.info("Post init done.")
 
-
-if __name__ == "__main__":
+def main():
     app = Application.builder().token(config.BOT_TOKEN).concurrent_updates(False).build()
     app.post_init = post_init
     app.run_polling()
+
+if __name__ == "__main__":
+    main()

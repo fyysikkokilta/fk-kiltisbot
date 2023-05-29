@@ -34,7 +34,7 @@ from kiltisbot.db.commands import (
     initialize_db,
 )
 
-if not isfile("kiltis.db"):
+if not isfile("data/kiltis.db"):
     print("Creating new database.")
     initialize_db()
 

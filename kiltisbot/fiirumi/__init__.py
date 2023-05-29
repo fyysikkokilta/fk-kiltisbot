@@ -11,6 +11,7 @@ import os
 
 from telegram.error import BadRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import ExtBot
 from ..utils import CallbackContext
 
 import config
@@ -62,9 +63,15 @@ async def check_messages(context: CallbackContext):
         save_data(data)
 
 
-async def vote_message(bot, update):
+async def vote_message(bot: ExtBot, update: Update):
     global data
     data = load_data()
+    assert update.effective_message is not None
+    assert update.effective_chat is not None
+    assert update.callback_query is not None
+    assert update.callback_query.data is not None
+    assert update.effective_user is not None
+    assert update.effective_message.reply_markup is not None
 
     message = update.effective_message.message_id
     chat = update.effective_chat.id
@@ -93,7 +100,7 @@ async def vote_message(bot, update):
         new_keyboard = update_keyboard(update.effective_message.reply_markup.inline_keyboard, prev_emoji, -1)
         new_keyboard = update_keyboard(new_keyboard, emoji, 1)
 
-        bot.edit_message_reply_markup(
+        await bot.edit_message_reply_markup(
             chat_id=chat,
             message_id=message,
             reply_markup=InlineKeyboardMarkup(new_keyboard),
