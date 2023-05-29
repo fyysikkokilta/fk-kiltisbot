@@ -1,40 +1,40 @@
 # FK kiltisbot
 Kiltisbot is a bot that provides many telegram integrations to Guild of Physics' services. Its features e.g. printing Guild's calendar events to telegram user, notifying in group chats about new posts in Fiirumi and digital stoke system for Guild's candy closet. Try it: https://t.me/@Fk_kiltisbot
 
-## Installation
-Running kiltisbot requires `python3` and `virtualenv` package. You can install `virtualenv` with
+## Installation & running
+Using kiltisbot requires `python3` and the [Poetry](https://python-poetry.org/) package manager.
+
+Activate virtual environment with
 ```console
-python3 -m pip install --user virtualenv
+poetry install
+poetry shell
 ```
-or you can install it globally without `--user` flag or you can install it with you disributions package manager. Create virtual environment for bot with
+
+Configure the bot by copying `config-example.py` to `config.py` and filling in the missing parts. For the production configuration reach out to the Guilds tech team.
+
+After configuring the bot, you can run it with
 ```console
-python3 -m venv env
+mkdir data/  # Create directory for SQLite DB
+poe run
 ```
-and activate environment and install dependencies with
-```console
-source env/bin/activate
-pip install -r requirements.txt
+
+### Running in Docker
+
+Run & detach. Copy Google credentials to `google_service_account_creds.json` and set up `config.py` in project root. Docker will create or mount a `data/` directory for the SQLite DB and create `kiltis.db` file there.
+```sh
+docker-compose up --build -d
 ```
-To start bot
-```console
-python3 bot.py
-```
-`Ctrl+C` stops the bot. You might want to start bot in `tmux` session. To do so run
-```console
-tmux new -s kiltisbot
-```
-Inside session start bot as above and detach from session by pressing `Ctrl+b+d`. You can later return to the session with
-```console
-tmux a -t kiltisbot
-```
+
 
 ## Configuration
 Bot is configured with python file. File `config-example.py` contains all variables that are needed to enjoy full functionality of kiltisbot. Copy file and name it `config.py` and fill missing parts.
 
-## Calendar events
-First you have to create `credentials.json` file in [Google API Console Credentials page](https://console.developers.google.com/apis/credentials). Select `create credentials` -> `OAuth cliend ID` -> select `Desktop app` for application type. Export json file, name it as `credentials.json` and place it in project root.
+## Calendar events & Drive backup
+The calendar functionality and Drive backups use a Google service account. This can be created in the [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts). The service account needs to have the following permissions:
+- Google Calendar API (read-only)
+- Google Drive API (read-write)
 
-You need `token.pickle` file in your project root for calendar events to work correctly. When bot is started first time (when `google_auth` is imported first time) browser window opens where you can sign up with your Google account to get token.
+The sheets used for backup need to be shared with the service account email (ACCOUNTNAME@PROJECTNAME.iam.gserviceaccount.com) with edit permissions for the backup to work.
 
 ## Fiirumi
 Press `/subscribe` in chat where you want to have notifications about new posts after you have added bot to chat.
