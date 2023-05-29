@@ -20,9 +20,7 @@ def get_events():
 
     # Suppress warning in logs
     # https://github.com/googleapis/google-api-python-client/issues/299
-    service = build(
-        "calendar", "v3", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("calendar", "v3", credentials=google_auth.creds, cache_discovery=False)
 
     now = datetime.datetime.utcnow().today().isoformat() + "Z"  # 'Z' indicates UTC time
 
@@ -61,12 +59,8 @@ async def tapahtumat(update: Update, context: CallbackContext):
             if len(event) == 1:
                 text += f"{event[0]}\n"
             else:
-                text += (
-                    f"{'.'.join(event[0].split('-')[::-1])} [{event[1]}]({event[2]})\n"
-                )
-    await context.bot.send_message(
-        update.effective_chat.id, text, parse_mode="MARKDOWN"
-    )
+                text += f"{'.'.join(event[0].split('-')[::-1])} [{event[1]}]({event[2]})\n"
+    await context.bot.send_message(update.effective_chat.id, text, parse_mode="MARKDOWN")
 
 
 def tapahtumat_tanaan():
@@ -100,15 +94,11 @@ async def tanaan_text(update: Update, context: CallbackContext):
     by sending list of events today."""
     assert update.effective_chat is not None, "Update unexpectedly has no chat"
     assert update.effective_message is not None, "Update unexpectedly has no message"
-    assert (
-        update.effective_message.text is not None
-    ), "Update message unexpectedly has no text"
+    assert update.effective_message.text is not None, "Update message unexpectedly has no text"
 
     events = tapahtumat_tanaan()
     if events and "tänään" in update.effective_message.text.lower():
         text = ""
         events_parsed = [f'<a href="{event[2]}">{event[1]}</a>\n' for event in events]
         text = "<b>TÄNÄÄN:</b>\n" + "\n".join(events_parsed)
-        await context.bot.send_message(
-            update.effective_chat.id, text, parse_mode="HTML"
-        )
+        await context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")

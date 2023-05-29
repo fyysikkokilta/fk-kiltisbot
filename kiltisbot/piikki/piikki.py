@@ -53,9 +53,7 @@ async def store(update: Update, context: CbCtx):
             if j + i * y < len(products):
                 prod = products[j + i * y][0]
                 price = products[j + i * y][1] / 100
-                btn = InlineKeyboardButton(
-                    "{} {:.2f}€".format(prod, price), callback_data=prod
-                )
+                btn = InlineKeyboardButton("{} {:.2f}€".format(prod, price), callback_data=prod)
                 row.append(btn)
         keyboard.append(row)
     keyboard.append([InlineKeyboardButton("Poistu", callback_data="Poistu")])
@@ -69,12 +67,8 @@ async def button(update: Update, context: CbCtx):
     Callback funtion for the inline keyboard buttons that
     handles what happens when user chooses an option in the store.
     """
-    assert (
-        update.callback_query is not None
-    ), "Update unexpectedly has no callback_query"
-    assert (
-        update.callback_query.data is not None
-    ), "Update unexpectedly has no callback_query.data"
+    assert update.callback_query is not None, "Update unexpectedly has no callback_query"
+    assert update.callback_query.data is not None, "Update unexpectedly has no callback_query.data"
     if update.callback_query.data.split(" ")[-1] in fiirumi.emojis:
         await fiirumi.vote_message(context.bot, update)
         return
@@ -95,9 +89,7 @@ async def button(update: Update, context: CbCtx):
     db.update_stock(query.data, -1)
 
     saldo = db.get_balance(user)
-    await query.edit_message_text(
-        text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100)
-    )
+    await query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100))
 
 
 async def rekisteroidy(update: Update, context: CbCtx):
@@ -112,9 +104,7 @@ async def rekisteroidy(update: Update, context: CbCtx):
         keyboard = [["Kyllä"], ["Ei"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
         assert update.message is not None, "Update unexpectedly has no message"
-        await update.message.reply_text(
-            TERMS_OF_USE_MSG, reply_markup=reply_markup, parse_mode="HTML"
-        )
+        await update.message.reply_text(TERMS_OF_USE_MSG, reply_markup=reply_markup, parse_mode="HTML")
     return HYVAKSYN
 
 
@@ -149,10 +139,7 @@ async def hyvaksyn(update: Update, context: CbCtx):
     else:
         await context.bot.send_message(
             update.effective_chat.id,
-            (
-                "Ei se mitään, paperinen piikki on myös ihan okei. Minä odottelen"
-                " täällä jos muutatkin mielesi :)"
-            ),
+            ("Ei se mitään, paperinen piikki on myös ihan okei. Minä odottelen" " täällä jos muutatkin mielesi :)"),
             reply_markup=ReplyKeyboardRemove(),
         )
         return ConversationHandler.END
@@ -207,10 +194,7 @@ async def ohjaa(update: Update, context: CbCtx):
 
     elif update.effective_message.text == saldo_sanat[2]:
         await update.message.reply_text(
-            (
-                "Paljonko rahaa haluaisit nostaa saldosta? Anna positiivinen"
-                " desimaaliluku."
-            ),
+            ("Paljonko rahaa haluaisit nostaa saldosta? Anna positiivinen" " desimaaliluku."),
             reply_markup=ReplyKeyboardRemove(),
         )
         return NOSTA
@@ -226,9 +210,7 @@ async def lisaa(update: Update, context: CbCtx):
     assert update.effective_user is not None, "No user in update"
     assert (
         update.message.text is not None
-    ), (  # TODO: send error message to user when this happens and require a number
-        "Message unexpectedly has no text"
-    )
+    ), "Message unexpectedly has no text"  # TODO: send error message to user when this happens and require a number
     try:
         maara = int(float(update.message.text.replace(",", ".")) * 100)
         if maara < 0:
@@ -263,9 +245,7 @@ async def nosta(update: Update, context: CbCtx):
     assert update.message is not None, "Update unexpectedly has no message"
     assert (
         update.message.text is not None
-    ), (  # TODO: send error message to user when this happens and require a number
-        "Message unexpectedly has no text"
-    )
+    ), "Message unexpectedly has no text"  # TODO: send error message to user when this happens and require a number
     assert update.effective_user is not None, "No user in update"
     try:
         maara = int(float(update.message.text.replace(",", ".")) * 100)
@@ -288,9 +268,7 @@ async def nosta(update: Update, context: CbCtx):
     saldo = db.get_balance(update.effective_user.id)
     await context.bot.send_message(
         update.message.chat.id,
-        "Rahan nostaminen saldosta onnistui. Saldosi on nyt {:.2f}€".format(
-            saldo / 100
-        ),
+        "Rahan nostaminen saldosta onnistui. Saldosi on nyt {:.2f}€".format(saldo / 100),
         reply_markup=ReplyKeyboardRemove(),
     )
     return ConversationHandler.END
@@ -299,9 +277,7 @@ async def nosta(update: Update, context: CbCtx):
 async def lopeta(update: Update, _context: CbCtx):
     """Handles ending a conversations handler conversations using command /lopeta."""
     assert update.message is not None, "Update unexpectedly has no message"
-    await update.message.reply_text(
-        "Toiminto keskeytetty.", reply_markup=ReplyKeyboardRemove()
-    )
+    await update.message.reply_text("Toiminto keskeytetty.", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
@@ -315,9 +291,7 @@ async def ei_lopetettavaa(update: Update, _context: CbCtx):
 
 async def tuntematon(update: Update, _context: CbCtx):
     assert update.message is not None, "Update unexpectedly has no message"
-    await update.message.reply_text(
-        "Odottamaton komento. Toiminto keskeytetty.", reply_markup=ReplyKeyboardRemove()
-    )
+    await update.message.reply_text("Odottamaton komento. Toiminto keskeytetty.", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
@@ -337,10 +311,10 @@ async def poistatko(update: Update, context: CbCtx):
     hinta = edellinen[4] / 100
     assert update.message is not None, "Update unexpectedly has no message"
     await update.message.reply_text(
-        ("Haluatko todella poistaa tapahtuman:\n{}  {}   {}   {:.2f}€?\n\n"
-        "Kirjoita missä vaiheessa tahansa /lopeta keskeyttääksesi toiminnon.").format(
-            paiva, aika, tuote, hinta
-        ),
+        (
+            "Haluatko todella poistaa tapahtuman:\n{}  {}   {}   {:.2f}€?\n\n"
+            "Kirjoita missä vaiheessa tahansa /lopeta keskeyttääksesi toiminnon."
+        ).format(paiva, aika, tuote, hinta),
         reply_markup=reply_markup,
     )
     return POISTA
@@ -384,23 +358,17 @@ async def hinnasto(update: Update, context: CbCtx):
     text = "```\nHinnasto:\n"
     for i in items:
         text += "{:_<18.18} {:.2f}€\n".format(i[0].strip() + " ", i[1] / 100)
-    await context.bot.send_message(
-        update.message.chat.id, text + "```", parse_mode="MARKDOWN"
-    )
+    await context.bot.send_message(update.message.chat.id, text + "```", parse_mode="MARKDOWN")
 
 
 async def ohje(update: Update, context: CbCtx):
     assert update.effective_user is not None, "No user in update"
-    await context.bot.send_message(
-        update.effective_user.id, TAB_INSTRUCTIONS_MSG, parse_mode="HTML"
-    )
+    await context.bot.send_message(update.effective_user.id, TAB_INSTRUCTIONS_MSG, parse_mode="HTML")
 
 
 async def ohje_in_english(update: Update, context: CbCtx):
     assert update.effective_user is not None, "No user in update"
-    await context.bot.send_message(
-        update.effective_user.id, TAB_INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode="HTML"
-    )
+    await context.bot.send_message(update.effective_user.id, TAB_INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode="HTML")
 
 
 # TODO can not export twice during the same minute because we would get same sheet name
@@ -435,9 +403,7 @@ async def export_inventory(update: Update, context: CbCtx):
     if await is_admin(context.bot, update):
         db.drive.export_inventory()
         assert update.message is not None, "Update unexpectedly has no message"
-        await context.bot.send_message(
-            update.message.chat.id, "Tuotteiden vieminen onnistui!"
-        )
+        await context.bot.send_message(update.message.chat.id, "Tuotteiden vieminen onnistui!")
 
 
 async def import_inventory(update: Update, context: CbCtx):
@@ -460,15 +426,9 @@ async def import_users(update: Update, context: CbCtx):
 
     if await is_admin(context.bot, update):
         delta = db.drive.import_users()
-        message = (
-            "Käyttäjiä lisätty {}".format(delta)
-            if delta >= 0
-            else "Käyttäjiä poistettu {}".format(abs(delta))
-        )
+        message = "Käyttäjiä lisätty {}".format(delta) if delta >= 0 else "Käyttäjiä poistettu {}".format(abs(delta))
         assert update.message is not None, "Update unexpectedly has no message"
-        await context.bot.send_message(
-            update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message
-        )
+        await context.bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
 
 
 async def import_transactions(update: Update, context: CbCtx):
@@ -485,9 +445,7 @@ async def import_transactions(update: Update, context: CbCtx):
         delta = db.drive.import_transactions()
         message = "Tapahtumia tuotu {}".format(delta)
         assert update.message is not None, "Update unexpectedly has no message"
-        await context.bot.send_message(
-            update.message.chat.id, "Tapahtumien tuominen onnistui! \n\n" + message
-        )
+        await context.bot.send_message(update.message.chat.id, "Tapahtumien tuominen onnistui! \n\n" + message)
 
 
 async def backup(context: CbCtx):
@@ -499,9 +457,7 @@ async def backup(context: CbCtx):
 
     await context.bot.send_message(
         config.ADMIN_CHAT,
-        "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(
-            users, transactions
-        ),
+        "Backup tehty! \n{} käyttäjää. \n{} uutta tapahtumaa.".format(users, transactions),
     )
 
 
@@ -513,9 +469,7 @@ async def kulutus(context: CbCtx):
     for i in tuotteet:
         text += "{:_<18.18}{:2d} kpl\n".format(i[0].strip() + " ", i[1])
 
-    await context.bot.send_message(
-        config.ADMIN_CHAT, text + "```", parse_mode="MARKDOWN"
-    )
+    await context.bot.send_message(config.ADMIN_CHAT, text + "```", parse_mode="MARKDOWN")
 
 
 async def velo(update: Update, context: CbCtx):
@@ -537,10 +491,7 @@ async def is_registered(bot, update: Update):
         assert update.message is not None, "Update does not have message"
         bot.send_message(
             update.message.chat.id,
-            (
-                "Rekisteröidy käyttääksesi tätä toiminnallisuutta kirjoittamalla"
-                " /kirjaudu."
-            ),
+            ("Rekisteröidy käyttääksesi tätä toiminnallisuutta kirjoittamalla" " /kirjaudu."),
         )
         return False
     else:
@@ -563,9 +514,7 @@ async def is_admin(bot: ExtBot, update: Update):
 
 # ConversationHandler function that handles the conversation for deleting previous action.
 poisto_handler = ConversationHandler(
-    entry_points=[
-        CommandHandler("poista_edellinen", poistatko, filters.ChatType.PRIVATE)
-    ],
+    entry_points=[CommandHandler("poista_edellinen", poistatko, filters.ChatType.PRIVATE)],
     states={POISTA: [MessageHandler(filters.Regex(r"^(Kyllä|Ei)$"), poista)]},
     fallbacks=[
         CommandHandler("lopeta", lopeta),
@@ -583,11 +532,7 @@ saldo_handler = ConversationHandler(
         ALKU: [MessageHandler(filters.TEXT, saldo)],
         OHJAA: [
             MessageHandler(
-                filters.Regex(
-                    "^({}|{}|{})$".format(
-                        saldo_sanat[0], saldo_sanat[1], saldo_sanat[2]
-                    )
-                ),
+                filters.Regex("^({}|{}|{})$".format(saldo_sanat[0], saldo_sanat[1], saldo_sanat[2])),
                 ohjaa,
             )
         ],

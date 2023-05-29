@@ -11,9 +11,7 @@ from kiltisbot import db, google_auth
 
 
 def import_inventory():
-    service = build(
-        "sheets", "v4", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("sheets", "v4", credentials=google_auth.creds, cache_discovery=False)
     sheet = service.spreadsheets()
     result = (
         sheet.values()
@@ -38,15 +36,9 @@ def import_users():
     Import users from Google Sheets to database and backups current users to new sheet.
     (Note that 2 consecutive imports will result in old data being reloaded)
     """
-    service = build(
-        "sheets", "v4", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("sheets", "v4", credentials=google_auth.creds, cache_discovery=False)
     sheet = service.spreadsheets()
-    result = (
-        sheet.values()
-        .get(spreadsheetId=config.USERS_SHEET_ID, range="A1:D", majorDimension="ROWS")
-        .execute()
-    )
+    result = sheet.values().get(spreadsheetId=config.USERS_SHEET_ID, range="A1:D", majorDimension="ROWS").execute()
     values = result.get("values", [])
     values = list(map(lambda x: [x[0], x[1], x[2], int(x[3])], values))
     users = len(db.get_users())
@@ -60,15 +52,9 @@ def import_users():
 
 # TODO get rid of headers in google sheets to simplify things
 def import_transactions():
-    service = build(
-        "sheets", "v4", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("sheets", "v4", credentials=google_auth.creds, cache_discovery=False)
     sheet = service.spreadsheets()
-    result = (
-        sheet.values()
-        .get(spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:F")
-        .execute()["values"]
-    )
+    result = sheet.values().get(spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:F").execute()["values"]
     values = list(map(lambda x: (int(x[1]), x[3], x[5], int(float(x[4]))), result[1:]))
     print("Importing transactions (first 10 shown): ", values[:10])
     db.delete_transactions()
@@ -78,9 +64,7 @@ def import_transactions():
 
 
 def export_inventory():
-    service = build(
-        "sheets", "v4", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("sheets", "v4", credentials=google_auth.creds, cache_discovery=False)
 
     inventory = list(map(lambda x: x[0], db.get_stocks()))
 
@@ -103,9 +87,7 @@ def export_inventory():
 
 
 def export_users():
-    service = build(
-        "sheets", "v4", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("sheets", "v4", credentials=google_auth.creds, cache_discovery=False)
     sheet = service.spreadsheets()
 
     date = datetime.datetime.today().isoformat()[:16].replace(":", ".")
@@ -125,11 +107,7 @@ def export_users():
     add_body = {"requests": requests}
     body = {"values": users}
 
-    (
-        service.spreadsheets()
-        .batchUpdate(spreadsheetId=config.USERS_SHEET_ID, body=add_body)
-        .execute()
-    )
+    (service.spreadsheets().batchUpdate(spreadsheetId=config.USERS_SHEET_ID, body=add_body).execute())
 
     (
         service.spreadsheets()
@@ -147,16 +125,10 @@ def export_users():
 
 
 def export_transactions():
-    service = build(
-        "sheets", "v4", credentials=google_auth.creds, cache_discovery=False
-    )
+    service = build("sheets", "v4", credentials=google_auth.creds, cache_discovery=False)
 
     sheet = service.spreadsheets()
-    result = (
-        sheet.values()
-        .get(spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:F")
-        .execute()
-    )
+    result = sheet.values().get(spreadsheetId=config.TRANSACTIONS_SHEET_ID, range="A1:F").execute()
     values = result.get("values", [])
 
     end = "2019-01-01"

@@ -57,9 +57,7 @@ async def check_messages(context: CallbackContext):
                             }
                         )
                     except BadRequest:
-                        print(
-                            "Sending message {} to {} failed.".format(text, c["name"])
-                        )
+                        print("Sending message {} to {} failed.".format(text, c["name"]))
     finally:
         save_data(data)
 
@@ -74,9 +72,7 @@ async def vote_message(bot, update):
 
     emoji = update.callback_query.data.split(" ")[-1]
     index = [
-        data["sent_messages"].index(x)
-        for x in data["sent_messages"]
-        if x["chat"] == chat and x["message"] == message
+        data["sent_messages"].index(x) for x in data["sent_messages"] if x["chat"] == chat and x["message"] == message
     ][0]
     sent_message = data["sent_messages"][index]
 
@@ -86,9 +82,7 @@ async def vote_message(bot, update):
             chat_id=chat,
             message_id=message,
             reply_markup=InlineKeyboardMarkup(
-                update_keyboard(
-                    update.effective_message.reply_markup.inline_keyboard, emoji, 1
-                )
+                update_keyboard(update.effective_message.reply_markup.inline_keyboard, emoji, 1)
             ),
         )
 
@@ -96,9 +90,7 @@ async def vote_message(bot, update):
         save_data(data)
     else:
         prev_emoji = sent_message["voters"][str(sender)]
-        new_keyboard = update_keyboard(
-            update.effective_message.reply_markup.inline_keyboard, prev_emoji, -1
-        )
+        new_keyboard = update_keyboard(update.effective_message.reply_markup.inline_keyboard, prev_emoji, -1)
         new_keyboard = update_keyboard(new_keyboard, emoji, 1)
 
         bot.edit_message_reply_markup(
@@ -155,20 +147,14 @@ def update_keyboard(keyboard, emoji, diff):
 
 
 async def subscribe(update: Update, context: CallbackContext):
-    assert (
-        update.effective_chat is not None
-    ), "Update unexpectedly initiated outside of chat"
+    assert update.effective_chat is not None, "Update unexpectedly initiated outside of chat"
     global data
     data = load_data()
     chats = [x["id"] for x in data["chats"]]
     if update.effective_chat.id not in chats:
-        data["chats"].append(
-            {"name": update.effective_chat.title, "id": update.effective_chat.id}
-        )
+        data["chats"].append({"name": update.effective_chat.title, "id": update.effective_chat.id})
         save_data(data)
-        await context.bot.send_message(
-            update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti"
-        )
+        await context.bot.send_message(update.effective_chat.id, "Fiirumipäivitykset tilattu onnistuneesti")
 
 
 def load_data():
@@ -205,6 +191,4 @@ global data
 data = load_data()
 
 emojis = ["👍", "😂", "😍", "🙈"]
-keyboard = InlineKeyboardMarkup(
-    [[InlineKeyboardButton(i, callback_data=i) for i in emojis]]
-)
+keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(i, callback_data=i) for i in emojis]])

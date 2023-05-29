@@ -60,10 +60,7 @@ def add_user(c: sqlite3.Cursor, id, nick, nimi, saldo):
 @commit
 def add_transaction(c, user, name, tuote, aika, hinta):
     c.execute(
-        (
-            "INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES"
-            " (NULL,?,?,?,?,?)"
-        ),
+        ("INSERT INTO transactions (id, user, user_name, tuote, hinta, aika) VALUES" " (NULL,?,?,?,?,?)"),
         (user, None, tuote, hinta, aika),
     )
 
@@ -132,9 +129,7 @@ def get_balance(c, id):
 
 @get
 def get_price(c, nimi):
-    return c.execute("SELECT hinta FROM inventory WHERE nimi=?", (nimi,)).fetchall()[0][
-        0
-    ]
+    return c.execute("SELECT hinta FROM inventory WHERE nimi=?", (nimi,)).fetchall()[0][0]
 
 
 # TODO consider changing this WHERE clause if maara is removed
@@ -150,9 +145,7 @@ def get_stocks(c):
 
 @get
 def get_last_transaction(c, user):
-    return c.execute(
-        "SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (user,)
-    ).fetchall()[0]
+    return c.execute("SELECT * FROM transactions WHERE user = ? ORDER BY aika DESC", (user,)).fetchall()[0]
 
 
 @get

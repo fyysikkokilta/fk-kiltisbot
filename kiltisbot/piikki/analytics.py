@@ -24,12 +24,7 @@ def get_data():
 def plot_histogram(data_user, uid):
     """Plots histogram of user's consumption data"""
 
-    purchases_by_product = (
-        data_user.groupby("tuote")
-        .count()
-        .sort_values("id", ascending=True)
-        .reset_index()
-    )
+    purchases_by_product = data_user.groupby("tuote").count().sort_values("id", ascending=True).reset_index()
     fig, ax = plt.subplots(1, figsize=(7, 8))
     ax.barh(purchases_by_product.tuote, purchases_by_product.id, 0.6, color="#201E1E")
     ax.tick_params(length=0)

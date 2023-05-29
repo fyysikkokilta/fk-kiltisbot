@@ -54,62 +54,24 @@ async def post_init(app: Application):
     # All command interactions with bot.
     # TODO: more dry way to do this?
     app.add_handler(CommandHandler("help", help_message, filters.ChatType.PRIVATE))
-    app.add_handler(
-        CommandHandler(
-            "help_in_english", help_message_in_english, filters.ChatType.PRIVATE
-        )
-    )
+    app.add_handler(CommandHandler("help_in_english", help_message_in_english, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("subscribe", fiirumi.subscribe))
     app.add_handler(CommandHandler("tapahtumat", fkcal.tapahtumat))
     app.add_handler(CommandHandler("tanaan", fkcal.tanaan_command))
-    app.add_handler(
-        CommandHandler(
-            "messaging_instructions", msg.ohje_in_english, filters.ChatType.PRIVATE
-        )
-    )
+    app.add_handler(CommandHandler("messaging_instructions", msg.ohje_in_english, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("viesti_ohje", msg.ohje, filters.ChatType.PRIVATE))
-    app.add_handler(
-        CommandHandler("candy_store", piikki.ohje_in_english, filters.ChatType.PRIVATE)
-    )
-    app.add_handler(
-        CommandHandler(
-            "export_inventory", piikki.export_inventory, filters.ChatType.PRIVATE
-        )
-    )
-    app.add_handler(
-        CommandHandler(
-            "export_transactions", piikki.export_transactions, filters.ChatType.PRIVATE
-        )
-    )
-    app.add_handler(
-        CommandHandler("export_users", piikki.export_users, filters.ChatType.PRIVATE)
-    )
-    app.add_handler(
-        CommandHandler("hinnasto", piikki.hinnasto, filters.ChatType.PRIVATE)
-    )
-    app.add_handler(
-        CommandHandler(
-            "import_inventory", piikki.import_inventory, filters.ChatType.PRIVATE
-        )
-    )
-    app.add_handler(
-        CommandHandler(
-            "import_transactions", piikki.import_transactions, filters.ChatType.PRIVATE
-        )
-    )
-    app.add_handler(
-        CommandHandler("import_users", piikki.import_users, filters.ChatType.PRIVATE)
-    )
+    app.add_handler(CommandHandler("candy_store", piikki.ohje_in_english, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("export_inventory", piikki.export_inventory, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("export_transactions", piikki.export_transactions, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("export_users", piikki.export_users, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("hinnasto", piikki.hinnasto, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("import_inventory", piikki.import_inventory, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("import_transactions", piikki.import_transactions, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("import_users", piikki.import_users, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("kauppa", piikki.store, filters.ChatType.PRIVATE))
-    app.add_handler(
-        CommandHandler(
-            "kulutus", piikki.analytics.send_histogram, filters.ChatType.PRIVATE
-        )
-    )
-    app.add_handler(
-        CommandHandler("piikki_ohje", piikki.ohje, filters.ChatType.PRIVATE)
-    )
+    app.add_handler(CommandHandler("kulutus", piikki.analytics.send_histogram, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("piikki_ohje", piikki.ohje, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("velo", piikki.velo, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("whoami", utils.whoami))
 
@@ -142,8 +104,6 @@ async def post_init(app: Application):
 
 
 if __name__ == "__main__":
-    app = (
-        Application.builder().token(config.BOT_TOKEN).concurrent_updates(False).build()
-    )
+    app = Application.builder().token(config.BOT_TOKEN).concurrent_updates(False).build()
     app.post_init = post_init
     app.run_polling()

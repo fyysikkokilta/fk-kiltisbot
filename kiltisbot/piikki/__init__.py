@@ -63,5 +63,5 @@ __all__ = [
     "register_handler",
     "poisto_handler",
     "saldo_handler",
-    "analytics"
+    "analytics",
 ]
