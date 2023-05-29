@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    volumes:
+      - ./config.py:/app/config.py
+      - ./google_service_account_creds.json:/app/google_service_account_creds.json
+      - ./data:/app/data
