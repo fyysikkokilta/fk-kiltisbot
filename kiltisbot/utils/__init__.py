@@ -9,12 +9,13 @@ from .callback_helper import CallbackContext
 
 
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 # Silence automatic logs of running scheduled tasks
-logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
+logging.getLogger("apscheduler.executors.default").setLevel(logging.WARNING)
 
 
 async def log_error(update: object | None, context: CallbackContext):
