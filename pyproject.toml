@@ -17,11 +17,25 @@ Pillow = '8.0.1'
 python-telegram-bot = {extras = ["job-queue"], version = "^20.3"}
 requests = '2.24.0'
 
-
-
 [tool.poetry.group.dev.dependencies]
 poethepoet = "^0.20.0"
+black = "^23.3.0"
+pyright = "^1.1.310"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+
+[tool.black]
+line-length = 120
+
+[tool.poe.tasks]
+_black_check = "black --check ."
+_type_check = "pyright ."
+_lint = "ruff ."
+
+lint = ["_black_check", "_lint", "_type_check"]
+run.script = "kiltisbot.bot:main()"
