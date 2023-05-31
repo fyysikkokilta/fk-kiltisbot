@@ -7,3 +7,8 @@ services:
       - ./config.py:/app/config.py
       - ./google_service_account_creds.json:/app/google_service_account_creds.json
       - ./data:/app/data
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
