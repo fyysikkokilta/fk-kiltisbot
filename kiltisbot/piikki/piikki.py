@@ -161,7 +161,6 @@ async def saldo(update: Update, context: CbCtx):
         " tahansa /lopeta keskeyttäksesi toiminnon.".format(saldo),
         reply_markup=reply_markup,
     )
-    breakpoint()
     return OHJAA
 
 
