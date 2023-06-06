@@ -23,7 +23,7 @@ from telegram.ext import filters
 from ..utils import CallbackContext as CbCtx
 
 import config
-from kiltisbot import db, fiirumi
+from kiltisbot import db
 from kiltisbot.strings import (
     TAB_INSTRUCTIONS_MSG,
     TAB_INSTRUCTIONS_IN_ENGLISH_MSG,
@@ -69,8 +69,9 @@ async def button(update: Update, context: CbCtx):
     """
     assert update.callback_query is not None, "Update unexpectedly has no callback_query"
     assert update.callback_query.data is not None, "Update unexpectedly has no callback_query.data"
-    if update.callback_query.data.split(" ")[-1] in fiirumi.emojis:
-        await fiirumi.vote_message(context.bot, update)
+    if update.callback_query.data.split(" ")[-1] in ["👍", "😂", "😍", "🙈"]:
+        # Don't do anything but keep old behavior to support clicking on old messages
+        # await fiirumi.vote_message(context.bot, update)
         return
     if not await is_registered(context.bot, update):
         return

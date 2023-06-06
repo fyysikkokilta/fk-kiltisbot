@@ -39,7 +39,7 @@ The sheets used for backup need to be shared with the service account email (ACC
 ## Fiirumi
 Press `/subscribe` in chat where you want to have notifications about new posts after you have added bot to chat.
 
-Note that the subscribed chats are not persisted and the `/subscribe` command has to be run on every bot restart. [Github Issue](https://github.com/fyysikkokilta/fk-kiltisbot/issues/22)
+The subscribed chats are persisted in `data/fiirumi_data.json`. If you want to unsubscribe Fiirumi notifications from some chat, you can remove the chat from the file.
 
 ## Drive backend
 Drive backend uses same token as calendar module. Drive backend enables importing and exporting database with telegram commands that are only available for admin users.
