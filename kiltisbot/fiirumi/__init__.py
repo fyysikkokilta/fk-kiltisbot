@@ -110,7 +110,7 @@ def load_data():
 
 def save_data(data):
     with open(FIIRUMI_DATA_FILE, "w") as d:
-        d.write(json.dumps(data))
+        json.dump(data, d, indent=2)
 
 
 def create_data():
