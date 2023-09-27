@@ -83,5 +83,5 @@ async def send_histogram(update: Update, context: CallbackContext):
     data_user = data[data.user == uid]
     caption = caption_text(data, data_user, uid)
     plot_histogram(data_user, uid)
-    context.bot.send_photo(uid, open(f"{uid}.png", "rb"), caption=caption)
+    await context.bot.send_photo(uid, open(f"{uid}.png", "rb"), caption=caption)
     os.remove(f"{uid}.png")
