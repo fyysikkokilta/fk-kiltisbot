@@ -60,7 +60,7 @@ async def tapahtumat(update: Update, context: CallbackContext):
                 text += f"{event[0]}\n"
             else:
                 text += f"{'.'.join(event[0].split('-')[::-1])} [{event[1]}]({event[2]})\n"
-    await context.bot.send_message(update.effective_chat.id, text, parse_mode="MARKDOWN")
+    await context.bot.send_message(update.effective_chat.id, text, parse_mode="MARKDOWN", disable_web_page_preview=True)
 
 
 def tapahtumat_tanaan():
@@ -86,7 +86,7 @@ async def tanaan_command(update: Update, context: CallbackContext):
         text = "<b>TÄNÄÄN:</b>\n" + "\n".join(events_parsed)
     else:
         text = "<b>TÄNÄÄN</b> ei ole tapahtumia"
-    await context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
+    await context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML", disable_web_page_preview=True)
 
 
 async def tanaan_text(update: Update, context: CallbackContext):
@@ -101,4 +101,4 @@ async def tanaan_text(update: Update, context: CallbackContext):
         text = ""
         events_parsed = [f'<a href="{event[2]}">{event[1]}</a>\n' for event in events]
         text = "<b>TÄNÄÄN:</b>\n" + "\n".join(events_parsed)
-        await context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML")
+        await context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML", disable_web_page_preview=True)
