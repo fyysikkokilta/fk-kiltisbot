@@ -15,7 +15,7 @@ matplotlib = '3.3.2'
 pandas = '1.5.3'
 Pillow = '10.3.0'
 python-telegram-bot = {extras = ["job-queue"], version = "^20.3"}
-requests = '2.24.0'
+requests = '2.32.2'
 
 [tool.poetry.group.dev.dependencies]
 poethepoet = "^0.20.0"
