@@ -8,7 +8,7 @@ FROM python:${PY_VER} AS poetry
 WORKDIR /app
 COPY poetry.lock pyproject.toml ./
 # build dependencies for matplotlib and pandas
-RUN pip install poetry wheel && \
+RUN pip install poetry poetry-plugin-export wheel && \
     poetry export | pip install --target=/site-packages -r /dev/stdin
 
 FROM python:${PY_VER}
