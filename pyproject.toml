@@ -8,19 +8,19 @@ packages = [{include = "kiltisbot"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-google-api-core = '1.23.0'
-google-api-python-client = '1.12.5'
-google-auth = '1.23.0'
-matplotlib = '3.3.2'
-pandas = '1.5.3'
-Pillow = '10.3.0'
-python-telegram-bot = {extras = ["job-queue"], version = "^20.3"}
+google-api-core = '2.25.1'
+google-api-python-client = '2.173.0'
+google-auth = '2.40.3'
+matplotlib = '3.10.3'
+pandas = '2.3.0'
+Pillow = '11.2.1'
+python-telegram-bot = {extras = ["job-queue"], version = "^22.1"}
 requests = '2.32.4'
 
 [tool.poetry.group.dev.dependencies]
-poethepoet = "^0.20.0"
-black = "^24.3.0"
-pyright = "^1.1.310"
+poethepoet = "^0.35.0"
+black = "^25.1.0"
+pyright = "^1.1.402"
 
 [build-system]
 requires = ["poetry-core"]
