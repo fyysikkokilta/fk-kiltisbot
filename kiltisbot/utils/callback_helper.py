@@ -11,7 +11,7 @@ CallbackContext = CallbackContext[ExtBot, dict, dict, dict]
 
 
 def msg_callback(
-    fun: Callable[[Message, CallbackContext], Awaitable[None]]
+    fun: Callable[[Message, CallbackContext], Awaitable[None]],
 ) -> Callable[[Update, CallbackContext], Awaitable[None]]:
     """Converts a function that takes a Message and CallbackContext as arguments
     to a function that takes an Update and CallbackContext as arguments.

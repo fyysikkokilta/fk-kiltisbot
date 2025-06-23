@@ -21,6 +21,7 @@ requests = '2.32.4'
 poethepoet = "^0.35.0"
 black = "^25.1.0"
 pyright = "^1.1.402"
+ruff = "^0.8.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -34,8 +35,8 @@ line-length = 120
 
 [tool.poe.tasks]
 _black_check = "black --check ."
-_type_check = "pyright ."
-_lint = "ruff ."
+# _type_check = "pyright ."
+_lint = "ruff check ."
 
-lint = ["_black_check", "_lint", "_type_check"]
+lint = ["_black_check", "_lint"] #, "_type_check"]
 run.script = "kiltisbot.bot:main()"

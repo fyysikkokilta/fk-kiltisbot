@@ -17,7 +17,7 @@ from telegram import Update
 
 import config
 from kiltisbot import (
-    #fiirumi, #fiirumoitu, eli ulkoistettu fiirumille
+    # fiirumi, #fiirumoitu, eli ulkoistettu fiirumille
     fkcal,
     msg,
     piikki,
@@ -56,7 +56,7 @@ async def post_init(app: Application):
     app.add_handler(CommandHandler("help", help_message, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("help_in_english", help_message_in_english, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("start", start))
-    #app.add_handler(CommandHandler("subscribe", fiirumi.subscribe))  #fiirumoitu, eli ulkoistettu fiirumille
+    # app.add_handler(CommandHandler("subscribe", fiirumi.subscribe))  #fiirumoitu, eli ulkoistettu fiirumille
     app.add_handler(CommandHandler("tapahtumat", fkcal.tapahtumat))
     app.add_handler(CommandHandler("tanaan", fkcal.tanaan_command))
     app.add_handler(CommandHandler("messaging_instructions", msg.ohje_in_english, filters.ChatType.PRIVATE))
@@ -94,7 +94,7 @@ async def post_init(app: Application):
     )
     jq.run_daily(piikki.backup, time=datetime.time(7, 0, 0), name="Backup")
 
-    #jq.run_repeating(fiirumi.check_messages, interval=5) #fiirumoitu, eli ulkoistettu fiirumille
+    # jq.run_repeating(fiirumi.check_messages, interval=5) #fiirumoitu, eli ulkoistettu fiirumille
     # jq.run_repeating(piikki.kulutus,interval=10, name = "Kulutus", )
     # jq.run_repeating(piikki.backup, interval=10, name = "Backup")
 
@@ -102,10 +102,12 @@ async def post_init(app: Application):
     # app.add_error_handler(utils.log_error)
     logger.info("Post init done.")
 
+
 def main():
     app = Application.builder().token(config.BOT_TOKEN).concurrent_updates(False).build()
     app.post_init = post_init
     app.run_polling()
+
 
 if __name__ == "__main__":
     main()

@@ -48,9 +48,7 @@ async def check_messages(context: CallbackContext):
                     text = format_message(p)
                     print("{} {}".format(c["id"], c["name"]))
                     try:
-                        msg = await context.bot.send_message(
-                            c["id"], text, parse_mode="MARKDOWN"
-                        )
+                        msg = await context.bot.send_message(c["id"], text, parse_mode="MARKDOWN")
                         data["sent_messages"].append(
                             {
                                 "username": p["username"],
@@ -87,7 +85,6 @@ def format_message(post):
     return text
 
 
-
 async def subscribe(update: Update, context: CallbackContext):
     assert update.effective_chat is not None, "Update unexpectedly initiated outside of chat"
     global data
@@ -122,7 +119,6 @@ def create_data():
     data["previous_messages"] = datetime.datetime.utcnow().isoformat()
 
     save_data(data)
-
 
 
 if not os.path.isfile(FIIRUMI_DATA_FILE):

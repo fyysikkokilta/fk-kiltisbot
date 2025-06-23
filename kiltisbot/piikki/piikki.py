@@ -1,7 +1,6 @@
 # coding=utf-8
 
-"""Contains all the functions to use the tab functionality of Kiltisbot.
-"""
+"""Contains all the functions to use the tab functionality of Kiltisbot."""
 
 import datetime
 import math
