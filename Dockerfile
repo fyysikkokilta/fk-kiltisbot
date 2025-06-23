@@ -2,7 +2,7 @@
 # 2. Start with a clean python image (no poetry)
 # 3. Copy /site-packages from poetry image to python image
 # 4. Copy the rest of the project files
-ARG PY_VER=3.11
+ARG PY_VER=3.13
 
 FROM python:${PY_VER} AS poetry
 WORKDIR /app
