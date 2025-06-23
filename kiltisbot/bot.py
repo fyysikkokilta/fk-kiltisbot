@@ -15,9 +15,9 @@ from telegram.ext import (
 from telegram.ext import filters
 from telegram import Update
 
-import config
 from kiltisbot import (
     # fiirumi, #fiirumoitu, eli ulkoistettu fiirumille
+    config,
     fkcal,
     msg,
     piikki,

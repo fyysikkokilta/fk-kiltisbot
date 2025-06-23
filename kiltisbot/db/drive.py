@@ -6,8 +6,7 @@ import datetime
 
 from googleapiclient.discovery import build
 
-import config
-from kiltisbot import db, google_auth
+from kiltisbot import db, google_auth, config
 
 
 def import_inventory():

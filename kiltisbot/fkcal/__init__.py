@@ -7,10 +7,9 @@ import datetime
 
 from googleapiclient.discovery import build
 from telegram import Update
-from ..utils import CallbackContext
 
-import config
-from kiltisbot import google_auth
+from kiltisbot import google_auth, config
+from kiltisbot.utils import CallbackContext
 
 
 def get_events():

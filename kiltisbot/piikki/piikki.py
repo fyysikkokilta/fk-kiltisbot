@@ -21,8 +21,7 @@ from telegram.ext import (
 from telegram.ext import filters
 from ..utils import CallbackContext as CbCtx
 
-import config
-from kiltisbot import db
+from kiltisbot import db, config
 from kiltisbot.strings import (
     TAB_INSTRUCTIONS_MSG,
     TAB_INSTRUCTIONS_IN_ENGLISH_MSG,

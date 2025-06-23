@@ -5,8 +5,8 @@ A file that contains all the messaging functionalities of Kiltisbot.
 from typing import Optional
 from telegram import Message, Update
 from telegram.ext import ExtBot
-from ..utils import CallbackContext
-import config
+from kiltisbot.utils import CallbackContext
+from kiltisbot import config
 from kiltisbot.strings import INSTRUCTIONS_MSG, INSTRUCTIONS_IN_ENGLISH_MSG
 
 # TODO sending non supported message type logs warning

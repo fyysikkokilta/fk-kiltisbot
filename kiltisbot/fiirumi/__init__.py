@@ -11,9 +11,9 @@ import os
 
 from telegram.error import BadRequest
 from telegram import Update
-from ..utils import CallbackContext
 
-import config
+from kiltisbot.utils import CallbackContext
+from kiltisbot import config
 
 
 FIIRUMI_DATA_FILE = "data/fiirumi_data.json"
