@@ -1,6 +1,6 @@
 env
 data
-config.py
+bot.env
 fiirumi_data.json
 *.pyc
 credentials.json

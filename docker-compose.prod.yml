@@ -1,6 +1,6 @@
 services:
   bot:
-    build: .
+    image: ghcr.io/fyysikkokilta/fk-kiltisbot:latest
     env_file:
       - bot.env
     volumes:
