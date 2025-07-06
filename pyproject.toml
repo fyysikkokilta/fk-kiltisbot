@@ -13,7 +13,7 @@ google-api-python-client = '2.173.0'
 google-auth = '2.40.3'
 matplotlib = '3.10.3'
 pandas = '2.3.0'
-Pillow = '11.2.1'
+Pillow = '11.3.0'
 python-telegram-bot = {extras = ["job-queue"], version = "^22.1"}
 requests = '2.32.4'
 
