@@ -7,10 +7,6 @@ from datetime import timedelta, datetime
 from telegram import Update
 from telegram.ext import CallbackContext
 
-# TODO if user has no transaction history command crashes
-# with 'DataFrame' object has no attribute 'tuote' caption text.
-# TODO save images to img folder
-
 
 def get_data():
     """Returns dataframe with all purchase data"""
