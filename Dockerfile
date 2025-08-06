@@ -4,14 +4,14 @@
 # 4. Copy the rest of the project files
 ARG PY_VER=3.13
 
-FROM python:${PY_VER} AS poetry
+FROM python:${PY_VER}-slim AS poetry
 WORKDIR /app
 COPY poetry.lock pyproject.toml ./
 # build dependencies for matplotlib and pandas
 RUN pip install poetry poetry-plugin-export wheel && \
     poetry export | pip install --target=/site-packages -r /dev/stdin
 
-FROM python:${PY_VER}
+FROM python:${PY_VER}-slim
 ARG PY_VER
 WORKDIR /app
 COPY --from=poetry /site-packages /usr/local/lib/python${PY_VER}/site-packages
