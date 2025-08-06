@@ -49,6 +49,9 @@ GOOGLE_CALENDARS: Dict[str, str] = {
     ),
 }
 
+# Base URL to newsletter.
+NEWSLETTER_BASE_URL = os.getenv("NEWSLETTER_BASE_URL")
+
 
 def validate_config():
     """Validate that all required environment variables are set."""
@@ -59,6 +62,7 @@ def validate_config():
         "INVENTORY_SHEET_ID",
         "USERS_SHEET_ID",
         "TRANSACTIONS_SHEET_ID",
+        "NEWSLETTER_BASE_URL",
     ]
 
     missing_vars = []

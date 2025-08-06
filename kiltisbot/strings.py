@@ -19,6 +19,8 @@ Minun kiinnostukseni ei ainakaan tähän riitä ja lisäksi olen rehellinen, jot
 
 Kiltisbot osaa myös hakea killan tulevat tapahtumat Google-kalenterista, jos kirjoitat /tapahtumat.
 
+Viikkotiedotteet saat komennoilla /viikkotiedote (suomeksi) tai /weekly (englanniksi).
+
 Vikatilanteissa ja kehitysehdotuksissa ota yhteyttä @elias_yj.
 
 Muista myös kiltistoimikunnan muut palvelut kuten @TsufeBot.
@@ -37,6 +39,10 @@ You can contact Guild room committee by simply sending message to the bot. All m
 relevant message types that Telegram supports are supported. Message will be anonymous unless you manually sign \
 your message (in principle your telegram user id is saved to log files which could be used to figure out your \
 identity but that is not something we would bother to do).
+
+<b>Weekly newsletters</b>
+
+Get the latest weekly newsletter with /weekly command.
 
 See also: @TsufeBot
 Source code: https://github.com/fyysikkokilta/fk-kiltisbot """
@@ -57,7 +63,11 @@ Jos haluat lisätietoja kiltistoimikunnan kanssa viestittelystä kirjoita:
 /viesti_ohje
 
 Jos haluat lisätietoja sähköisestä piikistä, kirjoita:
-/piikki_ohje"""
+/piikki_ohje
+
+Viikkotiedotteet:
+/viikkotiedote - Suomenkielinen viikkotiedote
+/weekly - Weekly newsletter in English"""
 
 
 HELP_IN_ENGLISH_MSG = """This bot is maintained by Guild room committee of the Guild of physics. It provides various \
@@ -68,6 +78,10 @@ How to communicate with Guild room committee via this bot:
 
 More info about candy store:
 /candy_store
+
+Weekly newsletters:
+/viikkotiedote - Suomenkielinen viikkotiedote
+/weekly - Weekly newsletter in English
 
 We encourage to experiment with other commands as well."""
 

@@ -20,6 +20,7 @@ from kiltisbot import (
     fkcal,
     msg,
     piikki,
+    newsletter,
     utils,
 )
 from kiltisbot.strings import START_MSG, HELP_MSG, HELP_IN_ENGLISH_MSG
@@ -71,6 +72,8 @@ async def post_init(app: Application):
     app.add_handler(CommandHandler("kulutus", piikki.analytics.send_histogram, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("piikki_ohje", piikki.ohje, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("velo", piikki.velo, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("viikkotiedote", newsletter.viikkotiedote, filters.ChatType.PRIVATE))
+    app.add_handler(CommandHandler("weekly", newsletter.weekly, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("whoami", utils.whoami))
 
     # These take care of all "button interactions" with bot.
@@ -82,7 +85,7 @@ async def post_init(app: Application):
     # Sending messages to bot & react to "tänään" string. Order matters here.
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE, msg.send_from_private))
     app.add_handler(MessageHandler(filters.REPLY, msg.reply))
-    app.add_handler(MessageHandler(filters.TEXT, fkcal.tanaan_text))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.ChatType.CHANNEL, fkcal.tanaan_text))
 
     # Backup and report admin chat on given intervals.
     jq.run_daily(

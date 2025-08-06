@@ -59,6 +59,15 @@ The sheets used for backup need to be shared with the service account email (ACC
 
 Drive backend uses same token as calendar module. Drive backend enables importing and exporting database with telegram commands that are only available for admin users.
 
+## Newsletter functionality
+
+The bot provides access to weekly newsletters through two commands:
+
+- `/viikkotiedote` - Get the current weekly newsletter in Finnish
+- `/weekly` - Get the current weekly newsletter in English
+
+The newsletter data is fetched from an external API endpoint configured via the `NEWSLETTER_BASE_URL` environment variable. The bot formats the newsletter content and sends it as an HTML-formatted message to users.
+
 ## Bugs and issues
 
 Many. Some of them are documented in the source code as TODO comments. You can find them by typing
