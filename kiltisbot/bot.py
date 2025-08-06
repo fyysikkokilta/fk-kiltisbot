@@ -7,12 +7,13 @@ import logging
 
 
 from telegram.ext import (
+    filters,
     Application,
     CommandHandler,
     MessageHandler,
     CallbackQueryHandler,
+    ContextTypes,
 )
-from telegram.ext import filters
 from telegram import Update
 
 from kiltisbot import (
@@ -24,23 +25,22 @@ from kiltisbot import (
     utils,
 )
 from kiltisbot.strings import START_MSG, HELP_MSG, HELP_IN_ENGLISH_MSG
-from .utils import CallbackContext
 
 logger = logging.getLogger(__name__)
 
 
-async def start(update: Update, context: CallbackContext):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """First message users see after they press /start."""
     assert update.message is not None, "Update unexpectedly has no message"
     await update.message.reply_text(START_MSG)
 
 
-async def help_message(update: Update, context: CallbackContext):
+async def help_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.message is not None
     await update.message.reply_text(HELP_MSG)
 
 
-async def help_message_in_english(update: Update, context: CallbackContext):
+async def help_message_in_english(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.message is not None, "Update unexpectedly has no message"
     await update.message.reply_text(HELP_IN_ENGLISH_MSG)
 

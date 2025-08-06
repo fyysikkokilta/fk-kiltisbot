@@ -13,13 +13,13 @@ from telegram import (
     Update,
 )
 from telegram.ext import (
+    filters,
     ExtBot,
     CommandHandler,
     MessageHandler,
     ConversationHandler,
+    ContextTypes,
 )
-from telegram.ext import filters
-from ..utils import CallbackContext as CbCtx
 
 from kiltisbot import db, config
 from kiltisbot.strings import (
@@ -33,7 +33,7 @@ ALKU, LISAA, NOSTA, OHJAA, POISTA, HYVAKSYN = range(6)
 saldo_sanat = ["Näytä saldo 💶👀", "Lisää saldoa 💶⬆️", "Nosta rahaa saldosta 💶⬇️"]
 
 
-async def store(update: Update, context: CbCtx):
+async def store(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Handles the "kauppa" commad for the bot.
     Prints the products as buttons that can be used to buy products.
@@ -60,7 +60,7 @@ async def store(update: Update, context: CbCtx):
     await update.message.reply_text("Mitä laitetaan?", reply_markup=reply_markup)
 
 
-async def button(update: Update, context: CbCtx):
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Callback funtion for the inline keyboard buttons that
     handles what happens when user chooses an option in the store.
@@ -90,7 +90,7 @@ async def button(update: Update, context: CbCtx):
     await query.edit_message_text(text="Ostit tuotteen: {}.\n\nSaldo: {:.2f}€".format(query.data, saldo / 100))
 
 
-async def rekisteroidy(update: Update, context: CbCtx):
+async def rekisteroidy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handles the conversations when registering new customers."""
     assert update.effective_user is not None, "No user in update"
     assert update.effective_chat is not None, "No chat in update"
@@ -106,7 +106,7 @@ async def rekisteroidy(update: Update, context: CbCtx):
     return HYVAKSYN
 
 
-async def hyvaksyn(update: Update, context: CbCtx):
+async def hyvaksyn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Conversation handler for when the user accepts terms and conditions."""
     assert update.message is not None, "Update unexpectedly has no message"
     user = update.effective_user
@@ -143,7 +143,7 @@ async def hyvaksyn(update: Update, context: CbCtx):
         return ConversationHandler.END
 
 
-async def saldo(update: Update, context: CbCtx):
+async def saldo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Conversations handler for when the user wishes to alter their saldo."""
 
     if not await is_registered(context.bot, update):
@@ -162,7 +162,7 @@ async def saldo(update: Update, context: CbCtx):
     return OHJAA
 
 
-async def ohjaa(update: Update, context: CbCtx):
+async def ohjaa(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Conversation handler for when the user wants
     to top up or withdraw from their account.
@@ -199,7 +199,7 @@ async def ohjaa(update: Update, context: CbCtx):
         return ConversationHandler.END
 
 
-async def lisaa(update: Update, context: CbCtx):
+async def lisaa(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Add money to account."""
 
     maara = 0
@@ -235,7 +235,7 @@ async def lisaa(update: Update, context: CbCtx):
     return ConversationHandler.END
 
 
-async def nosta(update: Update, context: CbCtx):
+async def nosta(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Withdraw money from account."""
 
     maara = 0
@@ -271,14 +271,14 @@ async def nosta(update: Update, context: CbCtx):
     return ConversationHandler.END
 
 
-async def lopeta(update: Update, _context: CbCtx):
+async def lopeta(update: Update, _context: ContextTypes.DEFAULT_TYPE):
     """Handles ending a conversations handler conversations using command /lopeta."""
     assert update.message is not None, "Update unexpectedly has no message"
     await update.message.reply_text("Toiminto keskeytetty.", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
-async def ei_lopetettavaa(update: Update, _context: CbCtx):
+async def ei_lopetettavaa(update: Update, _context: ContextTypes.DEFAULT_TYPE):
     assert update.message is not None, "Update unexpectedly has no message"
     await update.message.reply_text(
         "Sinulla ei ollut käynnissä toimintoa, jonka voisi lopettaa.",
@@ -286,13 +286,13 @@ async def ei_lopetettavaa(update: Update, _context: CbCtx):
     )
 
 
-async def tuntematon(update: Update, _context: CbCtx):
+async def tuntematon(update: Update, _context: ContextTypes.DEFAULT_TYPE):
     assert update.message is not None, "Update unexpectedly has no message"
     await update.message.reply_text("Odottamaton komento. Toiminto keskeytetty.", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
-async def poistatko(update: Update, context: CbCtx):
+async def poistatko(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handles removing the last action made by the user."""
 
     if not await is_registered(context.bot, update):
@@ -317,7 +317,7 @@ async def poistatko(update: Update, context: CbCtx):
     return POISTA
 
 
-async def poista(update: Update, context: CbCtx):
+async def poista(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Does the actual removing when user wants to remove their last action."""
     assert update.message is not None, "Update unexpectedly has no message"
     assert update.effective_user is not None, "No user in update"
@@ -348,7 +348,7 @@ async def poista(update: Update, context: CbCtx):
     return ConversationHandler.END
 
 
-async def hinnasto(update: Update, context: CbCtx):
+async def hinnasto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Prints items in stock and their prices."""
     assert update.message is not None, "Update unexpectedly has no message"
     items = db.get_items()
@@ -358,18 +358,18 @@ async def hinnasto(update: Update, context: CbCtx):
     await context.bot.send_message(update.message.chat.id, text + "```", parse_mode="MARKDOWN")
 
 
-async def ohje(update: Update, context: CbCtx):
+async def ohje(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_user is not None, "No user in update"
     await context.bot.send_message(update.effective_user.id, TAB_INSTRUCTIONS_MSG, parse_mode="HTML")
 
 
-async def ohje_in_english(update: Update, context: CbCtx):
+async def ohje_in_english(update: Update, context: ContextTypes.DEFAULT_TYPE):
     assert update.effective_user is not None, "No user in update"
     await context.bot.send_message(update.effective_user.id, TAB_INSTRUCTIONS_IN_ENGLISH_MSG, parse_mode="HTML")
 
 
 # TODO can not export twice during the same minute because we would get same sheet name
-async def export_users(update: Update, context: CbCtx):
+async def export_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Export users to Google sheets."""
 
     if await is_admin(context.bot, update):
@@ -381,7 +381,7 @@ async def export_users(update: Update, context: CbCtx):
         )
 
 
-async def export_transactions(update: Update, context: CbCtx):
+async def export_transactions(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Export sales events to Google sheets."""
 
     if await is_admin(context.bot, update):
@@ -395,7 +395,7 @@ async def export_transactions(update: Update, context: CbCtx):
 
 # TODO exporting invetory to empty sheet doesn't create names row for products in sheet.
 # This could be fixed same time when maara field is removed from database.
-async def export_inventory(update: Update, context: CbCtx):
+async def export_inventory(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Exports current inventory to google sheets."""
     if await is_admin(context.bot, update):
         db.drive.export_inventory()
@@ -403,7 +403,7 @@ async def export_inventory(update: Update, context: CbCtx):
         await context.bot.send_message(update.message.chat.id, "Tuotteiden vieminen onnistui!")
 
 
-async def import_inventory(update: Update, context: CbCtx):
+async def import_inventory(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Import inventory from Google sheets."""
 
     if await is_admin(context.bot, update):
@@ -415,7 +415,7 @@ async def import_inventory(update: Update, context: CbCtx):
         )
 
 
-async def import_users(update: Update, context: CbCtx):
+async def import_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Import users from Google Sheets.
     BE CAREFUL WHEN USING THIS. THIS WILL OWERWIRTE YOUR DATABASE!
@@ -428,7 +428,7 @@ async def import_users(update: Update, context: CbCtx):
         await context.bot.send_message(update.message.chat.id, "Käyttäjien tuominen onnistui! \n\n" + message)
 
 
-async def import_transactions(update: Update, context: CbCtx):
+async def import_transactions(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Import transactions from Google Sheets.
     BE CAREFUL WHEN USING THIS. THIS WILL OWERWRITE YOUR DATABASE!
@@ -445,7 +445,7 @@ async def import_transactions(update: Update, context: CbCtx):
         await context.bot.send_message(update.message.chat.id, "Tapahtumien tuominen onnistui! \n\n" + message)
 
 
-async def backup(context: CbCtx):
+async def backup(context: ContextTypes.DEFAULT_TYPE):
     """Backs up all the things to Google sheets."""
 
     users = db.drive.export_users()
@@ -458,7 +458,7 @@ async def backup(context: CbCtx):
     )
 
 
-async def kulutus(context: CbCtx):
+async def kulutus(context: ContextTypes.DEFAULT_TYPE):
     """Prints the daily tab events to the group chat."""
     eilinen = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat()
     tuotteet = db.get_consumption_after(eilinen)
@@ -469,7 +469,7 @@ async def kulutus(context: CbCtx):
     await context.bot.send_message(config.ADMIN_CHAT, text + "```", parse_mode="MARKDOWN")
 
 
-async def velo(update: Update, context: CbCtx):
+async def velo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Encourages people who are more than 5€ negative in their tab to pay their debts.
     """

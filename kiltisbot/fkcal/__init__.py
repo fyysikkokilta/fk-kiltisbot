@@ -7,9 +7,9 @@ import datetime
 
 from googleapiclient.discovery import build
 from telegram import Update
+from telegram.ext import ContextTypes
 
 from kiltisbot import google_auth, config
-from kiltisbot.utils import CallbackContext
 
 
 def get_events():
@@ -47,7 +47,7 @@ def get_events():
     return all_calendar_events
 
 
-async def tapahtumat(update: Update, context: CallbackContext):
+async def tapahtumat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Return all_calendar_events events in all_calendar_events calendars."""
     assert update.effective_chat is not None, "Update unexpectedly has no chat"
     text = ""
@@ -74,7 +74,7 @@ def tapahtumat_tanaan():
     return out
 
 
-async def tanaan_command(update: Update, context: CallbackContext):
+async def tanaan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send message containing list of todays events."""
     assert update.effective_chat is not None, "Update unexpectedly has no chat"
 
@@ -88,7 +88,7 @@ async def tanaan_command(update: Update, context: CallbackContext):
     await context.bot.send_message(update.effective_chat.id, text, parse_mode="HTML", disable_web_page_preview=True)
 
 
-async def tanaan_text(update: Update, context: CallbackContext):
+async def tanaan_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Reacts to chat messages containing string "tänään" if there are events today
     by sending list of events today."""
     assert update.effective_chat is not None, "Update unexpectedly has no chat"

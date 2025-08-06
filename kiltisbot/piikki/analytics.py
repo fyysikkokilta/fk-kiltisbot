@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from datetime import timedelta, datetime
 
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import ContextTypes
 
 
 def get_data():
@@ -69,7 +69,7 @@ Viimeiset kaksi viikkoa:
 { chr(10).join(x for x in data_user[recent_purchases].tuote.values) }"""
 
 
-async def send_histogram(update: Update, context: CallbackContext):
+async def send_histogram(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Sends histogram of consumption data to user with caption"""
     assert update.message is not None, "Update unexpectedly has no message"
 

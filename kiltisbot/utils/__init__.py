@@ -5,7 +5,7 @@ Logging settings and come helper functions.
 import logging
 import time
 from telegram import Update
-from .callback_helper import CallbackContext
+from telegram.ext import ContextTypes
 
 
 # Enable logging
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logging.getLogger("apscheduler.executors.default").setLevel(logging.WARNING)
 
 
-async def log_error(update: object | None, context: CallbackContext):
+async def log_error(update: object | None, context: ContextTypes.DEFAULT_TYPE):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
@@ -32,7 +32,7 @@ async def flush_messages(bot):
         updates = await bot.get_updates(updates[-1]["update_id"] + 1)
 
 
-async def whoami(update: Update, context: CallbackContext):
+async def whoami(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Return user or chat id depending whether it is called in chat
     or with private message."""
     assert update.effective_message is not None, "Update unexpectedly has no message"

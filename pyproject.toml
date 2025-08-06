@@ -34,8 +34,8 @@ line-length = 120
 
 [tool.poe.tasks]
 _black_check = "black --check ."
-# _type_check = "pyright ."
+_type_check = "pyright ."
 _lint = "ruff check ."
 
-lint = ["_black_check", "_lint"] #, "_type_check"]
+lint = ["_black_check", "_lint", "_type_check"]
 run.script = "kiltisbot.bot:main()"

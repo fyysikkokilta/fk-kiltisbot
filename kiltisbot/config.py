@@ -4,13 +4,10 @@ This replaces the old config.py file that contained hardcoded values.
 """
 
 import os
-from typing import List, Dict
 
 
-def get_env_list(key: str, default: List[int] = None) -> List[int]:
+def get_env_list(key: str, default: list[int] = []) -> list[int]:
     """Get a list of integers from an environment variable."""
-    if default is None:
-        default = []
     value = os.getenv(key)
     if not value:
         return default
@@ -21,24 +18,24 @@ def get_env_list(key: str, default: List[int] = None) -> List[int]:
 
 
 # Token that you get from BotFather.
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "NOT_SET")
 
 # Telegram IDs of people who can run certain priviledged commands.
-BOT_ADMINS = get_env_list("BOT_ADMINS")
+BOT_ADMINS = get_env_list("BOT_ADMINS", [])
 
 # ID of chat where daily backup and consumption notifications are sent.
-ADMIN_CHAT = os.getenv("ADMIN_CHAT")
+ADMIN_CHAT = int(os.getenv("ADMIN_CHAT", "0"))
 
 # ID of chat where messages sent to bot are forwarded.
-MESSAGING_CHAT = os.getenv("MESSAGING_CHAT")
+MESSAGING_CHAT = int(os.getenv("MESSAGING_CHAT", "0"))
 
 # ID of Google Sheets where database is backed up.
-INVENTORY_SHEET_ID = os.getenv("INVENTORY_SHEET_ID")
-USERS_SHEET_ID = os.getenv("USERS_SHEET_ID")
-TRANSACTIONS_SHEET_ID = os.getenv("TRANSACTIONS_SHEET_ID")
+INVENTORY_SHEET_ID = os.getenv("INVENTORY_SHEET_ID", "NOT_SET")
+USERS_SHEET_ID = os.getenv("USERS_SHEET_ID", "NOT_SET")
+TRANSACTIONS_SHEET_ID = os.getenv("TRANSACTIONS_SHEET_ID", "NOT_SET")
 
 # Dictionary that contains calendars to follow as calendar name: calendar ID pairs.
-GOOGLE_CALENDARS: Dict[str, str] = {
+GOOGLE_CALENDARS = {
     "FK Tapahtumat": os.getenv("GOOGLE_CALENDAR_FK_TAPAHTUMAT", "ahe0vjbi6j16p25rcftgfou5eg@group.calendar.google.com"),
     "FK Kokoukset": os.getenv("GOOGLE_CALENDAR_FK_KOKOUKSET", "guqva296aoq695aqgq68ak7lkc@group.calendar.google.com"),
     "FK Fuksit": os.getenv("GOOGLE_CALENDAR_FK_FUKSIT", "u6eju2k63ond2fs7fqvjbna50c@group.calendar.google.com"),
@@ -50,7 +47,7 @@ GOOGLE_CALENDARS: Dict[str, str] = {
 }
 
 # Base URL to newsletter.
-NEWSLETTER_BASE_URL = os.getenv("NEWSLETTER_BASE_URL")
+NEWSLETTER_BASE_URL = os.getenv("NEWSLETTER_BASE_URL", "https://fyysikkokilta.fi")
 
 
 def validate_config():
@@ -62,7 +59,6 @@ def validate_config():
         "INVENTORY_SHEET_ID",
         "USERS_SHEET_ID",
         "TRANSACTIONS_SHEET_ID",
-        "NEWSLETTER_BASE_URL",
     ]
 
     missing_vars = []

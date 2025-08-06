@@ -1,6 +1,6 @@
-from telegram.ext import ContextTypes
-from telegram import Update
 import requests
+from telegram import Update
+from telegram.ext import ContextTypes
 
 from kiltisbot import config
 
@@ -22,9 +22,11 @@ def get_newsletter_data(lang):
 
 async def viikkotiedote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = get_newsletter_data("fi")
-    await update.message.reply_text(message, parse_mode="html")
+    assert update.message is not None, "Update unexpectedly has no message"
+    await update.message.reply_text(message, parse_mode="HTML")
 
 
 async def weekly(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = get_newsletter_data("en")
-    await update.message.reply_text(message, parse_mode="html")
+    assert update.message is not None, "Update unexpectedly has no message"
+    await update.message.reply_text(message, parse_mode="HTML")
