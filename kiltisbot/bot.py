@@ -58,6 +58,8 @@ async def post_init(app: Application):
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("tapahtumat", fkcal.tapahtumat))
     app.add_handler(CommandHandler("tanaan", fkcal.tanaan_command))
+    app.add_handler(CommandHandler("viikkotiedote", newsletter.viikkotiedote))
+    app.add_handler(CommandHandler("weekly", newsletter.weekly))
     app.add_handler(CommandHandler("messaging_instructions", msg.ohje_in_english, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("viesti_ohje", msg.ohje, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("candy_store", piikki.ohje_in_english, filters.ChatType.PRIVATE))
@@ -72,8 +74,6 @@ async def post_init(app: Application):
     app.add_handler(CommandHandler("kulutus", piikki.analytics.send_histogram, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("piikki_ohje", piikki.ohje, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("velo", piikki.velo, filters.ChatType.PRIVATE))
-    app.add_handler(CommandHandler("viikkotiedote", newsletter.viikkotiedote, filters.ChatType.PRIVATE))
-    app.add_handler(CommandHandler("weekly", newsletter.weekly, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("whoami", utils.whoami))
 
     # These take care of all "button interactions" with bot.
