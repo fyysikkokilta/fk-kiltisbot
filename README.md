@@ -1,6 +1,6 @@
 # FK kiltisbot
 
-Kiltisbot is a bot that provides many telegram integrations to Guild of Physics' services. Its features e.g. printing Guild's calendar events to telegram user, notifying in group chats about new posts in Fiirumi and digital stoke system for Guild's candy closet. Try it: https://t.me/@Fk_kiltisbot
+Kiltisbot is a bot that provides many telegram integrations to Guild of Physics' services. Its features e.g. printing Guild's calendar events to telegram user and digital stoke system for Guild's candy closet. Try it: https://t.me/@Fk_kiltisbot
 
 ## Installation & running
 
@@ -54,12 +54,6 @@ The calendar functionality and Drive backups use a Google service account. This 
 - Google Drive API (read-write)
 
 The sheets used for backup need to be shared with the service account email (ACCOUNTNAME@PROJECTNAME.iam.gserviceaccount.com) with edit permissions for the backup to work.
-
-## Fiirumi
-
-Press `/subscribe` in chat where you want to have notifications about new posts after you have added bot to chat.
-
-The subscribed chats are persisted in `data/fiirumi_data.json`. If you want to unsubscribe Fiirumi notifications from some chat, you can remove the chat from the file.
 
 ## Drive backend
 

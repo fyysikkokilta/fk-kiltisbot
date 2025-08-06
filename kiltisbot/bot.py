@@ -16,7 +16,6 @@ from telegram.ext import filters
 from telegram import Update
 
 from kiltisbot import (
-    # fiirumi, #fiirumoitu, eli ulkoistettu fiirumille
     config,
     fkcal,
     msg,
@@ -56,7 +55,6 @@ async def post_init(app: Application):
     app.add_handler(CommandHandler("help", help_message, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("help_in_english", help_message_in_english, filters.ChatType.PRIVATE))
     app.add_handler(CommandHandler("start", start))
-    # app.add_handler(CommandHandler("subscribe", fiirumi.subscribe))  #fiirumoitu, eli ulkoistettu fiirumille
     app.add_handler(CommandHandler("tapahtumat", fkcal.tapahtumat))
     app.add_handler(CommandHandler("tanaan", fkcal.tanaan_command))
     app.add_handler(CommandHandler("messaging_instructions", msg.ohje_in_english, filters.ChatType.PRIVATE))
@@ -86,17 +84,13 @@ async def post_init(app: Application):
     app.add_handler(MessageHandler(filters.REPLY, msg.reply))
     app.add_handler(MessageHandler(filters.TEXT, fkcal.tanaan_text))
 
-    # Backup, check Fiirumi and report admin chat on given intervals.
+    # Backup and report admin chat on given intervals.
     jq.run_daily(
         piikki.kulutus,
         time=datetime.time(7, 0, 0),
         name="Kulutus",
     )
     jq.run_daily(piikki.backup, time=datetime.time(7, 0, 0), name="Backup")
-
-    # jq.run_repeating(fiirumi.check_messages, interval=5) #fiirumoitu, eli ulkoistettu fiirumille
-    # jq.run_repeating(piikki.kulutus,interval=10, name = "Kulutus", )
-    # jq.run_repeating(piikki.backup, interval=10, name = "Backup")
 
     # NOTE: Please comment out this line when wanting tracebacks in error logs.
     # app.add_error_handler(utils.log_error)

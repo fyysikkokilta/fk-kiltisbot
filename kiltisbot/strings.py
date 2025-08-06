@@ -61,7 +61,7 @@ Jos haluat lisätietoja sähköisestä piikistä, kirjoita:
 
 
 HELP_IN_ENGLISH_MSG = """This bot is maintained by Guild room committee of the Guild of physics. It provides various \
-Telegram integrations of Guild's services e.g. calendars, Fiirumi discussion board and candy store.
+Telegram integrations of Guild's services e.g. calendars and candy store.
 
 How to communicate with Guild room committee via this bot:
 /messaging_instructions

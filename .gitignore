@@ -1,7 +1,6 @@
 env
 data
 bot.env
-fiirumi_data.json
 *.pyc
 credentials.json
 creds.json

@@ -49,9 +49,6 @@ GOOGLE_CALENDARS: Dict[str, str] = {
     ),
 }
 
-# Base URL to fiirumi.
-FIIRUMI_POSTS_URL = os.getenv("FIIRUMI_POSTS_URL", "https://fiirumi.fyysikkokilta.fi")
-
 
 def validate_config():
     """Validate that all required environment variables are set."""

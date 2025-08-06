@@ -69,7 +69,6 @@ async def button(update: Update, context: CbCtx):
     assert update.callback_query.data is not None, "Update unexpectedly has no callback_query.data"
     if update.callback_query.data.split(" ")[-1] in ["👍", "😂", "😍", "🙈"]:
         # Don't do anything but keep old behavior to support clicking on old messages
-        # await fiirumi.vote_message(context.bot, update)
         return
     if not await is_registered(context.bot, update):
         return
