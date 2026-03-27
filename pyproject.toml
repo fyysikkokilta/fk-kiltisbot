@@ -18,7 +18,7 @@ requests = '2.33.0'
 
 [tool.poetry.group.dev.dependencies]
 poethepoet = "^0.36.0"
-black = "^25.1.0"
+black = "^26.3.1"
 pyright = "^1.1.403"
 ruff = "^0.12.7"
 
